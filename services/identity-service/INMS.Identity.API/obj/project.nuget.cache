@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "KKT5wdnTJSI=",
+  "success": true,
+  "projectFilePath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.API\\INMS.Identity.API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\VICTUS\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.16\\microsoft.aspnetcore.openapi.9.0.16.nupkg.sha512",
+    "C:\\Users\\VICTUS\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
