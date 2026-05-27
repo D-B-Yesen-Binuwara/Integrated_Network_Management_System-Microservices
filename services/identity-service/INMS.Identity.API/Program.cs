@@ -8,18 +8,12 @@ using INMS.Identity.Application.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-var identityConn = builder.Configuration.GetConnectionString("IdentityConnection");
-if (!string.IsNullOrWhiteSpace(identityConn))
+builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
-    builder.Services.AddDbContext<IdentityDbContext>(options =>
-        options.UseSqlServer(identityConn));
-}
-else
-{
-    // Fallback to a local SQLite file for development/migration convenience
-    builder.Services.AddDbContext<IdentityDbContext>(options =>
-        options.UseSqlite("Data Source=identity.db"));
-}
+    var connectionString = builder.Configuration.GetConnectionString("IdentityConnection");
+
+    options.UseNpgsql(connectionString);
+});
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
