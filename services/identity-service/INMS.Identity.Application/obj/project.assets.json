@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
+      "projectUniqueName": "c:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
       "projectName": "INMS.Identity.Application",
-      "projectPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
+      "projectPath": "c:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
       "packagesPath": "C:\\Users\\VICTUS\\.nuget\\packages\\",
-      "outputPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\obj\\",
+      "outputPath": "c:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\VICTUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -51,8 +51,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj": {
-              "projectPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj"
+            "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj": {
+              "projectPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj"
             }
           }
         }

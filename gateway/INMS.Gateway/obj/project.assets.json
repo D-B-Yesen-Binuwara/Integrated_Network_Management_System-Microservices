@@ -172,11 +172,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Integrated_Network_Management_System-Microservices\\gateway\\INMS.Gateway\\INMS.Gateway.csproj",
+      "projectUniqueName": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\gateway\\INMS.Gateway\\INMS.Gateway.csproj",
       "projectName": "INMS.Gateway",
-      "projectPath": "C:\\Integrated_Network_Management_System-Microservices\\gateway\\INMS.Gateway\\INMS.Gateway.csproj",
+      "projectPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\gateway\\INMS.Gateway\\INMS.Gateway.csproj",
       "packagesPath": "C:\\Users\\VICTUS\\.nuget\\packages\\",
-      "outputPath": "C:\\Integrated_Network_Management_System-Microservices\\gateway\\INMS.Gateway\\obj\\",
+      "outputPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\gateway\\INMS.Gateway\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\VICTUS\\AppData\\Roaming\\NuGet\\NuGet.Config"

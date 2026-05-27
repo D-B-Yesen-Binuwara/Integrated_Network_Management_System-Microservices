@@ -1,0 +1,16 @@
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\bin\Debug\net9.0\INMS.Identity.Application.deps.json
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\bin\Debug\net9.0\INMS.Identity.Application.dll
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\bin\Debug\net9.0\INMS.Identity.Application.pdb
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\bin\Debug\net9.0\INMS.Identity.Domain.dll
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\bin\Debug\net9.0\INMS.Identity.Domain.pdb
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.csproj.AssemblyReference.cache
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.GeneratedMSBuildEditorConfig.editorconfig
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.AssemblyInfoInputs.cache
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.AssemblyInfo.cs
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.csproj.CoreCompileInputs.cache
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.sourcelink.json
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Ide.E705E1F5.Up2Date
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.dll
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\refint\INMS.Identity.Application.dll
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\INMS.Identity.Application.pdb
+c:\C# Projects\Integrated_Network_Management_System-Microservices\services\identity-service\INMS.Identity.Application\obj\Debug\net9.0\ref\INMS.Identity.Application.dll

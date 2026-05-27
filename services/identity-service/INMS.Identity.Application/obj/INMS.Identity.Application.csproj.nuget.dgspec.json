@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj": {}
+    "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj": {}
   },
   "projects": {
-    "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj": {
+    "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
+        "projectUniqueName": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
         "projectName": "INMS.Identity.Application",
-        "projectPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
+        "projectPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\INMS.Identity.Application.csproj",
         "packagesPath": "C:\\Users\\VICTUS\\.nuget\\packages\\",
-        "outputPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\obj\\",
+        "outputPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\VICTUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,8 +26,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj": {
-                "projectPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj"
+              "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj": {
+                "projectPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj"
               }
             }
           }
@@ -67,14 +67,14 @@
         }
       }
     },
-    "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj": {
+    "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj",
+        "projectUniqueName": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj",
         "projectName": "INMS.Identity.Domain",
-        "projectPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj",
+        "projectPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\INMS.Identity.Domain.csproj",
         "packagesPath": "C:\\Users\\VICTUS\\.nuget\\packages\\",
-        "outputPath": "C:\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\obj\\",
+        "outputPath": "C:\\C# Projects\\Integrated_Network_Management_System-Microservices\\services\\identity-service\\INMS.Identity.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\VICTUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
