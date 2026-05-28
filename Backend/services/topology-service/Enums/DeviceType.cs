@@ -1,4 +1,4 @@
-namespace INMS.Domain.Enums;
+namespace topology_service.Enums;
 
 public enum DeviceType
 {

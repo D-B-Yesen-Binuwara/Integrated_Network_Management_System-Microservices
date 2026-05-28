@@ -1,58 +1,64 @@
 using System.ComponentModel.DataAnnotations;
-using INMS.Domain.Enums;
+using topology_service.Enums;
 
-namespace INMS.Application.DTOs;
+namespace topology_service.DTOs;
 
-public record CreateDeviceDto(
-	string DeviceName,
-	DeviceType DeviceType,
-	string? IP,
-	PriorityLevel PriorityLevel,
-	int LEAId,
-	[Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90")]
-	decimal Latitude,
-	[Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180")]
-	decimal Longitude
-);
+public class DeviceDto
+{
+    public int DeviceId { get; set; }
+    public string DeviceName { get; set; } = string.Empty;
+    public DeviceType DeviceType { get; set; }
+    public string IP { get; set; } = string.Empty;
+    public DeviceStatus Status { get; set; }
+    public PriorityLevel PriorityLevel { get; set; }
+    public decimal Latitude { get; set; }
+    public decimal Longitude { get; set; }
+    public bool IsSimulatedDown { get; set; }
+}
 
-public record UpdateDeviceDto(
-	string DeviceName,
-	DeviceType DeviceType,
-	string? IP,
-	string Status,
-	PriorityLevel PriorityLevel,
-	int LEAId,
-	[Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90")]
-	decimal Latitude,
-	[Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180")]
-	decimal Longitude
-);
+public class CreateDeviceDto
+{
+    [Required]
+    [MaxLength(100)]
+    public string DeviceName { get; set; } = string.Empty;
 
-public record DeviceMapDto(
-	int DeviceId,
-	string DeviceName,
-	string DeviceType,
-	decimal Latitude,
-	decimal Longitude,
-	string Status,
-	int IsImpacted
-);
+    [Required]
+    public DeviceType DeviceType { get; set; }
 
-public record DeviceListDto(
-	int DeviceId,
-	string DeviceName,
-	DeviceType DeviceType,
-	string IP,
-	DeviceStatus Status,
-	PriorityLevel PriorityLevel,
-	int LEAId,
-	string? LEAName,
-	string? ProvinceName,
-	string? RegionName,
-	decimal Latitude,
-	decimal Longitude,
-	int? AssignedUserId,
-	string? AssignedUserFullName,
-	string? AssignedUserServiceId,
-	bool IsSimulatedDown
-);
+    [MaxLength(50)]
+    public string? IP { get; set; }
+
+    [Required]
+    public PriorityLevel PriorityLevel { get; set; }
+
+    [Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90")]
+    public decimal Latitude { get; set; }
+
+    [Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180")]
+    public decimal Longitude { get; set; }
+}
+
+public class UpdateDeviceDto
+{
+    [Required]
+    [MaxLength(100)]
+    public string DeviceName { get; set; } = string.Empty;
+
+    [Required]
+    public DeviceType DeviceType { get; set; }
+
+    [MaxLength(50)]
+    public string? IP { get; set; }
+
+    [Required]
+    public DeviceStatus Status { get; set; }
+
+    [Required]
+    public PriorityLevel PriorityLevel { get; set; }
+
+    [Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90")]
+    public decimal Latitude { get; set; }
+
+    [Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180")]
+    public decimal Longitude { get; set; }
+}

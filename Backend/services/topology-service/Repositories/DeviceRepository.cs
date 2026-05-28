@@ -1,73 +1,58 @@
-using Microsoft.EntityFrameworkCore;
-using INMS.Domain.Entities;
-using INMS.Domain.Interfaces;
-using INMS.Infrastructure.Persistence;
+using topology_service.Entities;
 
-namespace INMS.Infrastructure.Repositories;
+namespace topology_service.Repositories;
 
 public class DeviceRepository : IDeviceRepository
 {
-    private readonly AppDbContext _context;
+    private readonly List<Device> _devices = new();
+    private int _nextId = 1;
 
-    public DeviceRepository(AppDbContext context)
+    public IEnumerable<Device> GetAll()
     {
-        _context = context;
+        return _devices.OrderBy(device => device.DeviceId).ToList();
     }
 
-    public async Task<Device?> GetByIdAsync(int id)
+    public Device? GetById(int id)
     {
-        return await _context.Devices.FindAsync(id);
+        return _devices.FirstOrDefault(device => device.DeviceId == id);
     }
 
-    public async Task<List<Device>> GetAllAsync()
+    public Device Create(Device device)
     {
-        return await _context.Devices.ToListAsync();
+        device.DeviceId = _nextId++;
+        _devices.Add(device);
+        return device;
     }
 
-    public async Task AddAsync(Device device)
+    public Device? Update(int id, Device device)
     {
-        await _context.Devices.AddAsync(device);
-        await _context.SaveChangesAsync();
+        var existing = GetById(id);
+        if (existing == null)
+        {
+            return null;
+        }
+
+        existing.DeviceName = device.DeviceName;
+        existing.DeviceType = device.DeviceType;
+        existing.IP = device.IP;
+        existing.Status = device.Status;
+        existing.PriorityLevel = device.PriorityLevel;
+        existing.Latitude = device.Latitude;
+        existing.Longitude = device.Longitude;
+        existing.IsSimulatedDown = device.IsSimulatedDown;
+
+        return existing;
     }
 
-    public async Task UpdateAsync(Device device)
+    public bool Delete(int id)
     {
-        _context.Devices.Update(device);
-        await _context.SaveChangesAsync();
-    }
+        var existing = GetById(id);
+        if (existing == null)
+        {
+            return false;
+        }
 
-    public async Task<List<Device>> GetDevicesByLeaAsync(int leaId)
-    {
-        return await _context.Devices
-            .Where(d => d.LEAId == leaId)
-            .ToListAsync();
-    }
-
-    public async Task<List<Device>> GetDevicesByProvinceAsync(int provinceId)
-    {
-        return await _context.Devices
-            .Join(_context.LEAs,
-                d => d.LEAId,
-                l => l.LEAId,
-                (d, l) => new { Device = d, LEA = l })
-            .Where(x => x.LEA.ProvinceId == provinceId)
-            .Select(x => x.Device)
-            .ToListAsync();
-    }
-
-    public async Task<List<Device>> GetDevicesByRegionAsync(int regionId)
-    {
-        return await _context.Devices
-            .Join(_context.LEAs,
-                d => d.LEAId,
-                l => l.LEAId,
-                (d, l) => new { Device = d, LEA = l })
-            .Join(_context.Provinces,
-                x => x.LEA.ProvinceId,
-                p => p.ProvinceId,
-                (x, p) => new { x.Device, Province = p })
-            .Where(x => x.Province.RegionId == regionId)
-            .Select(x => x.Device)
-            .ToListAsync();
+        _devices.Remove(existing);
+        return true;
     }
 }
