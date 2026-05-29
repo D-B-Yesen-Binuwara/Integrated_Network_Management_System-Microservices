@@ -15,14 +15,15 @@ This project follows a microservices architecture pattern with the following com
 
 ```
 Integrated_Network_Management_System-Microservices/
-├── gateway/                    # API Gateway (YARP)
-│   └── INMS.Gateway/
-├── services/                   # Microservices
-│   └── identity-service/       # Identity & User Management
-│       ├── INMS.Identity.API/
-│       ├── INMS.Identity.Application/
-│       ├── INMS.Identity.Domain/
-│       └── INMS.Identity.Infrastructure/
+├── Backend/
+│   ├── gateway/                    # API Gateway (YARP)
+│   │   └── INMS.Gateway/
+│   └── services/                   # Microservices
+│       └── identity-service/       # Identity & User Management
+│           ├── INMS.Identity.API/
+│           ├── INMS.Identity.Application/
+│           ├── INMS.Identity.Domain/
+│           └── INMS.Identity.Infrastructure/
 ├── frontend/                   # React Frontend
 └── Alarm_Management_System/    # Legacy monolith (excluded)
 ```
@@ -30,9 +31,9 @@ Integrated_Network_Management_System-Microservices/
 ## 🚀 Services
 
 ### API Gateway
-**Location:** `gateway/INMS.Gateway/`
+**Location:** `Backend/gateway/INMS.Gateway/`
 **Technology:** ASP.NET Core 9.0 + YARP Reverse Proxy
-**Port:** 5000 (HTTP) / 5001 (HTTPS)
+**Port:** 5253 (HTTP) / 7030 (HTTPS)
 
 **Features:**
 - Route-based request forwarding
@@ -44,10 +45,10 @@ Integrated_Network_Management_System-Microservices/
 - `/identity/**` → Identity Service (localhost:7001)
 
 ### Identity Service
-**Location:** `services/identity-service/`
+**Location:** `Backend/services/identity-service/`
 **Technology:** ASP.NET Core 9.0 + Entity Framework Core
-**Port:** 7000 (HTTP) / 7001 (HTTPS)
-**Database:** SQL Server (production) / SQLite (development)
+**Port:** 5017 (HTTP) / 7001 (HTTPS)
+**Database:** PostgreSQL (development/production)
 
 **Features:**
 - User management (CRUD operations)
@@ -101,7 +102,7 @@ Integrated_Network_Management_System-Microservices/
 ### Prerequisites
 - .NET 9.0 SDK
 - Node.js 18+ and npm
-- SQL Server (optional - SQLite fallback available)
+- PostgreSQL 14+
 - Visual Studio 2022 or VS Code
 
 ### Backend Setup
@@ -114,23 +115,23 @@ Integrated_Network_Management_System-Microservices/
 
 2. **Build Identity Service:**
    ```bash
-   dotnet restore services/identity-service/INMS.Identity.sln
-   dotnet build services/identity-service/INMS.Identity.sln
+   dotnet restore Backend/services/identity-service/INMS.Identity.sln
+   dotnet build Backend/services/identity-service/INMS.Identity.sln
    ```
 
 3. **Setup Database (Identity Service):**
    ```bash
    # Create migration (if needed)
-   dotnet ef migrations add InitialCreate --project services/identity-service/INMS.Identity.Infrastructure --startup-project services/identity-service/INMS.Identity.API
+   dotnet ef migrations add InitialCreate --project Backend/services/identity-service/INMS.Identity.Infrastructure --startup-project Backend/services/identity-service/INMS.Identity.API
    
    # Apply migration
-   dotnet ef database update --project services/identity-service/INMS.Identity.Infrastructure --startup-project services/identity-service/INMS.Identity.API
+   dotnet ef database update --project Backend/services/identity-service/INMS.Identity.Infrastructure --startup-project Backend/services/identity-service/INMS.Identity.API
    ```
 
 4. **Build Gateway:**
    ```bash
-   dotnet restore gateway/INMS.Gateway/INMS.Gateway.csproj
-   dotnet build gateway/INMS.Gateway/INMS.Gateway.csproj
+   dotnet restore Backend/gateway/INMS.Gateway/INMS.Gateway.csproj
+   dotnet build Backend/gateway/INMS.Gateway/INMS.Gateway.csproj
    ```
 
 ### Frontend Setup
@@ -150,16 +151,16 @@ Integrated_Network_Management_System-Microservices/
 
 1. **Start Identity Service:**
    ```bash
-   dotnet run --project services/identity-service/INMS.Identity.API
+   dotnet run --project Backend/services/identity-service/INMS.Identity.API
    ```
    - API: https://localhost:7001
    - Swagger: https://localhost:7001/swagger
 
 2. **Start API Gateway:**
    ```bash
-   dotnet run --project gateway/INMS.Gateway
+   dotnet run --project Backend/gateway/INMS.Gateway
    ```
-   - Gateway: https://localhost:5001
+   - Gateway: https://localhost:7030
 
 3. **Start Frontend:**
    ```bash
@@ -170,29 +171,26 @@ Integrated_Network_Management_System-Microservices/
 
 ## 🗄️ Database Configuration
 
-### Production (SQL Server)
-Add connection string to `appsettings.json`:
+### PostgreSQL
+Connection string in `Backend/services/identity-service/INMS.Identity.API/appsettings.Development.json`:
 ```json
 {
   "ConnectionStrings": {
-    "IdentityConnection": "Server=localhost;Database=INMS_Identity;Trusted_Connection=true;TrustServerCertificate=true;"
+    "IdentityConnection": "Host=localhost;Port=5432;Database=INMS_Identity;Username=postgres;Password=<password>"
   }
 }
 ```
 
-### Development (SQLite)
-No configuration needed - automatically uses `identity.db` file in the Identity service directory.
-
 ## 🔧 Configuration
 
 ### Gateway Configuration
-**File:** `gateway/INMS.Gateway/appsettings.json`
+**File:** `Backend/gateway/INMS.Gateway/appsettings.json`
 
 - Configure routes and clusters for service discovery
 - Add new microservices by updating the ReverseProxy section
 
 ### Identity Service Configuration
-**File:** `services/identity-service/INMS.Identity.API/appsettings.json`
+**File:** `Backend/services/identity-service/INMS.Identity.API/appsettings.json`
 
 - Database connection strings
 - CORS policies
