@@ -4,9 +4,9 @@ namespace topology_service.Repositories;
 
 public interface IDeviceRepository
 {
-    IEnumerable<Device> GetAll();
-    Device? GetById(int id);
-    Device Create(Device device);
-    Device? Update(int id, Device device);
-    bool Delete(int id);
+    Task<List<Device>> GetAllAsync();
+    Task<Device?> GetByIdAsync(int id);
+    Task AddAsync(Device device);
+    Task<Device?> UpdateAsync(int id, Device device);
+    Task<bool> DeleteAsync(int id);
 }

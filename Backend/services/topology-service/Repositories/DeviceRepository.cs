@@ -1,32 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+using topology_service.Data;
 using topology_service.Entities;
 
 namespace topology_service.Repositories;
 
 public class DeviceRepository : IDeviceRepository
 {
-    private readonly List<Device> _devices = new();
-    private int _nextId = 1;
+    private readonly TopologyDbContext _context;
 
-    public IEnumerable<Device> GetAll()
+    public DeviceRepository(TopologyDbContext context)
     {
-        return _devices.OrderBy(device => device.DeviceId).ToList();
+        _context = context;
     }
 
-    public Device? GetById(int id)
+    public async Task<List<Device>> GetAllAsync()
     {
-        return _devices.FirstOrDefault(device => device.DeviceId == id);
+        return await _context.Devices.AsNoTracking().OrderBy(device => device.DeviceId).ToListAsync();
     }
 
-    public Device Create(Device device)
+    public async Task<Device?> GetByIdAsync(int id)
     {
-        device.DeviceId = _nextId++;
-        _devices.Add(device);
-        return device;
+        return await _context.Devices.AsNoTracking().FirstOrDefaultAsync(device => device.DeviceId == id);
     }
 
-    public Device? Update(int id, Device device)
+    public async Task AddAsync(Device device)
     {
-        var existing = GetById(id);
+        await _context.Devices.AddAsync(device);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Device?> UpdateAsync(int id, Device device)
+    {
+        var existing = await _context.Devices.FirstOrDefaultAsync(current => current.DeviceId == id);
         if (existing == null)
         {
             return null;
@@ -40,18 +45,20 @@ public class DeviceRepository : IDeviceRepository
         existing.Latitude = device.Latitude;
         existing.Longitude = device.Longitude;
 
+        await _context.SaveChangesAsync();
         return existing;
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        var existing = GetById(id);
+        var existing = await _context.Devices.FirstOrDefaultAsync(device => device.DeviceId == id);
         if (existing == null)
         {
             return false;
         }
 
-        _devices.Remove(existing);
+        _context.Devices.Remove(existing);
+        await _context.SaveChangesAsync();
         return true;
     }
 }

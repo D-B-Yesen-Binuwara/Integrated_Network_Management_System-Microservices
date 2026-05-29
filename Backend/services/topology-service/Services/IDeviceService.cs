@@ -1,13 +1,12 @@
 using topology_service.DTOs;
-using topology_service.Entities;
 
 namespace topology_service.Services;
 
 public interface IDeviceService
 {
-    IEnumerable<DeviceDto> GetAll();
-    DeviceDto? GetById(int id);
-    DeviceDto Create(CreateDeviceDto dto);
-    DeviceDto? Update(int id, UpdateDeviceDto dto);
-    bool Delete(int id);
+    Task<List<DeviceDto>> GetAllAsync();
+    Task<DeviceDto?> GetByIdAsync(int id);
+    Task<DeviceDto> CreateAsync(CreateDeviceDto dto);
+    Task<DeviceDto?> UpdateAsync(int id, UpdateDeviceDto dto);
+    Task<bool> DeleteAsync(int id);
 }

@@ -1,28 +1,34 @@
-using System.IO;
+using DotNetEnv;
+using Npgsql;
+using topology_service.Enums;
+using Microsoft.EntityFrameworkCore;
+using topology_service.Data;
 using topology_service.Repositories;
 using topology_service.Services;
 
-LoadDotEnv();
+Env.TraversePath().Load();
+
+NpgsqlConnection.GlobalTypeMapper.MapEnum<DeviceType>("device_type");
+NpgsqlConnection.GlobalTypeMapper.MapEnum<DeviceStatus>("device_status");
+NpgsqlConnection.GlobalTypeMapper.MapEnum<PriorityLevel>("priority_level");
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                 .AddEnvironmentVariables();
+builder.Configuration.AddEnvironmentVariables();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrWhiteSpace(connectionString))
-{
-    throw new InvalidOperationException("Missing ConnectionStrings:DefaultConnection in configuration.");
-}
 
-builder.Services.AddSingleton(new DatabaseSettings(connectionString));
+builder.Services.AddDbContext<TopologyDbContext>(options =>
+{
+    options.UseNpgsql(connectionString);
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IDeviceRepository, DeviceRepository>();
-builder.Services.AddSingleton<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
 
 var app = builder.Build();
 
@@ -37,33 +43,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-
-static void LoadDotEnv()
-{
-    var envFile = Path.Combine(AppContext.BaseDirectory, ".env");
-    if (!File.Exists(envFile))
-    {
-        envFile = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-    }
-
-    if (!File.Exists(envFile))
-    {
-        return;
-    }
-
-    foreach (var line in File.ReadAllLines(envFile))
-    {
-        var trimmed = line.Trim();
-        if (string.IsNullOrEmpty(trimmed) || trimmed.StartsWith("#") || !trimmed.Contains('='))
-        {
-            continue;
-        }
-
-        var index = trimmed.IndexOf('=');
-        var key = trimmed[..index].Trim();
-        var value = trimmed[(index + 1)..].Trim().Trim('"');
-        Environment.SetEnvironmentVariable(key, value);
-    }
-}
-
-internal sealed record DatabaseSettings(string DefaultConnection);

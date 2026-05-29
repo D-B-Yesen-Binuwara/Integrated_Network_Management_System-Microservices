@@ -14,18 +14,19 @@ public class DeviceService : IDeviceService
         _deviceRepository = deviceRepository;
     }
 
-    public IEnumerable<DeviceDto> GetAll()
+    public async Task<List<DeviceDto>> GetAllAsync()
     {
-        return _deviceRepository.GetAll().Select(MapToDto);
+        var devices = await _deviceRepository.GetAllAsync();
+        return devices.Select(MapToDto).ToList();
     }
 
-    public DeviceDto? GetById(int id)
+    public async Task<DeviceDto?> GetByIdAsync(int id)
     {
-        var device = _deviceRepository.GetById(id);
+        var device = await _deviceRepository.GetByIdAsync(id);
         return device == null ? null : MapToDto(device);
     }
 
-    public DeviceDto Create(CreateDeviceDto dto)
+    public async Task<DeviceDto> CreateAsync(CreateDeviceDto dto)
     {
         var device = new Device
         {
@@ -38,33 +39,30 @@ public class DeviceService : IDeviceService
             Longitude = dto.Longitude
         };
 
-        var created = _deviceRepository.Create(device);
-        return MapToDto(created);
+        await _deviceRepository.AddAsync(device);
+        return MapToDto(device);
     }
 
-    public DeviceDto? Update(int id, UpdateDeviceDto dto)
+    public async Task<DeviceDto?> UpdateAsync(int id, UpdateDeviceDto dto)
     {
-        var existing = _deviceRepository.GetById(id);
-        if (existing == null)
+        var device = new Device
         {
-            return null;
-        }
+            DeviceName = dto.DeviceName,
+            DeviceType = dto.DeviceType,
+            IP = dto.IP ?? string.Empty,
+            Status = dto.Status,
+            PriorityLevel = dto.PriorityLevel,
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude
+        };
 
-        existing.DeviceName = dto.DeviceName;
-        existing.DeviceType = dto.DeviceType;
-        existing.IP = dto.IP ?? string.Empty;
-        existing.Status = dto.Status;
-        existing.PriorityLevel = dto.PriorityLevel;
-        existing.Latitude = dto.Latitude;
-        existing.Longitude = dto.Longitude;
-
-        var updated = _deviceRepository.Update(id, existing);
+        var updated = await _deviceRepository.UpdateAsync(id, device);
         return updated == null ? null : MapToDto(updated);
     }
 
-    public bool Delete(int id)
+    public Task<bool> DeleteAsync(int id)
     {
-        return _deviceRepository.Delete(id);
+        return _deviceRepository.DeleteAsync(id);
     }
 
     private static DeviceDto MapToDto(Device device)

@@ -16,35 +16,36 @@ public class DeviceController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<DeviceDto>> GetAll()
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetAll()
     {
-        return Ok(_deviceService.GetAll());
+        var devices = await _deviceService.GetAllAsync();
+        return Ok(devices);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<DeviceDto> GetById(int id)
+    public async Task<ActionResult<DeviceDto>> GetById(int id)
     {
-        var device = _deviceService.GetById(id);
+        var device = await _deviceService.GetByIdAsync(id);
         return device == null ? NotFound() : Ok(device);
     }
 
     [HttpPost]
-    public ActionResult<DeviceDto> Create([FromBody] CreateDeviceDto dto)
+    public async Task<ActionResult<DeviceDto>> Create([FromBody] CreateDeviceDto dto)
     {
-        var created = _deviceService.Create(dto);
+        var created = await _deviceService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.DeviceId }, created);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<DeviceDto> Update(int id, [FromBody] UpdateDeviceDto dto)
+    public async Task<ActionResult<DeviceDto>> Update(int id, [FromBody] UpdateDeviceDto dto)
     {
-        var updated = _deviceService.Update(id, dto);
+        var updated = await _deviceService.UpdateAsync(id, dto);
         return updated == null ? NotFound() : Ok(updated);
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        return _deviceService.Delete(id) ? NoContent() : NotFound();
+        return await _deviceService.DeleteAsync(id) ? NoContent() : NotFound();
     }
 }
