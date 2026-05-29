@@ -1,0 +1,6 @@
+@INMS.Identity.API_HostAddress = http://localhost:5017
+
+GET {{INMS.Identity.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
