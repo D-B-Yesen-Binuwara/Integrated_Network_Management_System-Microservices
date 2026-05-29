@@ -39,7 +39,6 @@ public class DeviceRepository : IDeviceRepository
         existing.PriorityLevel = device.PriorityLevel;
         existing.Latitude = device.Latitude;
         existing.Longitude = device.Longitude;
-        existing.IsSimulatedDown = device.IsSimulatedDown;
 
         return existing;
     }

@@ -35,8 +35,7 @@ public class DeviceService : IDeviceService
             Status = DeviceStatus.UP,
             PriorityLevel = dto.PriorityLevel,
             Latitude = dto.Latitude,
-            Longitude = dto.Longitude,
-            IsSimulatedDown = false
+            Longitude = dto.Longitude
         };
 
         var created = _deviceRepository.Create(device);
@@ -79,8 +78,7 @@ public class DeviceService : IDeviceService
             Status = device.Status,
             PriorityLevel = device.PriorityLevel,
             Latitude = device.Latitude,
-            Longitude = device.Longitude,
-            IsSimulatedDown = device.IsSimulatedDown
+            Longitude = device.Longitude
         };
     }
 }

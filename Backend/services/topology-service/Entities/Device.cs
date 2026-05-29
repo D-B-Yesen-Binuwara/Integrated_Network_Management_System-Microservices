@@ -32,6 +32,4 @@ public class Device
     [Required]
     [Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180")]
     public decimal Longitude { get; set; }
-
-    public bool IsSimulatedDown { get; set; }
 }

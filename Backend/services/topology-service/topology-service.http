@@ -1,6 +1,8 @@
 @topology_service_HostAddress = http://localhost:5102
 
-GET {{topology_service_HostAddress}}/weatherforecast/
+###
+# Topology service device API example
+GET {{topology_service_HostAddress}}/api/device
 Accept: application/json
 
 ###
