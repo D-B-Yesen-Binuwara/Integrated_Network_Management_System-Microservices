@@ -12,6 +12,7 @@ public class TopologyDbContext : DbContext
     }
 
     public DbSet<Device> Devices => Set<Device>();
+    public DbSet<DeviceLink> DeviceLinks => Set<DeviceLink>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,8 +48,28 @@ public class TopologyDbContext : DbContext
             entity.Property(d => d.PriorityLevel)
                 .HasConversion<string>()
                 .HasColumnName("priority_level");
+        });
 
+        modelBuilder.Entity<DeviceLink>(entity =>
+        {
+            entity.ToTable("device_links");
 
+            entity.HasKey(dl => dl.LinkId);
+
+            entity.Property(dl => dl.LinkId).HasColumnName("link_id");
+            entity.Property(dl => dl.ParentDeviceId).HasColumnName("parent_device_id");
+            entity.Property(dl => dl.ChildDeviceId).HasColumnName("child_device_id");
+            entity.Property(dl => dl.LinkStatus).HasColumnName("link_status");
+
+            entity.HasOne(dl => dl.ParentDevice)
+                .WithMany()
+                .HasForeignKey(dl => dl.ParentDeviceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(dl => dl.ChildDevice)
+                .WithMany()
+                .HasForeignKey(dl => dl.ChildDeviceId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

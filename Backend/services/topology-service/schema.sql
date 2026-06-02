@@ -97,3 +97,26 @@ ALTER COLUMN status TYPE varchar(50);
 
 ALTER TABLE devices
 ALTER COLUMN priority_level TYPE varchar(50);
+
+-- =============================================================================
+-- Device Links Table (Topology / Cycle safety)
+-- =============================================================================
+CREATE TABLE device_links (
+    link_id SERIAL PRIMARY KEY,
+    parent_device_id INT NOT NULL,
+    child_device_id INT NOT NULL,
+    link_status VARCHAR(50) NOT NULL DEFAULT 'UP',
+
+    -- Constraints
+    CONSTRAINT fk_device_links_parent FOREIGN KEY (parent_device_id) REFERENCES devices(device_id) ON DELETE CASCADE,
+    CONSTRAINT fk_device_links_child FOREIGN KEY (child_device_id) REFERENCES devices(device_id) ON DELETE CASCADE,
+    CONSTRAINT uq_parent_child UNIQUE (parent_device_id, child_device_id)
+);
+
+CREATE INDEX idx_device_links_parent_child ON device_links(parent_device_id, child_device_id);
+
+COMMENT ON TABLE device_links IS 'Stores parent-child validation relationships between network devices';
+COMMENT ON COLUMN device_links.link_id IS 'Unique identifier for each device link';
+COMMENT ON COLUMN device_links.parent_device_id IS 'Foreign key referencing the parent device';
+COMMENT ON COLUMN device_links.child_device_id IS 'Foreign key referencing the child device';
+COMMENT ON COLUMN device_links.link_status IS 'Current status of the connection link';

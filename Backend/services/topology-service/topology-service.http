@@ -6,3 +6,35 @@ GET {{topology_service_HostAddress}}/api/device
 Accept: application/json
 
 ###
+
+# Get all device links
+GET {{topology_service_HostAddress}}/api/devicelink
+Accept: application/json
+
+###
+
+# Create a valid parent-child link (SLBN_Device-001 -> CEAN_Device-001)
+POST {{topology_service_HostAddress}}/api/devicelink
+Content-Type: application/json
+
+{
+  "parentDeviceId": 1,
+  "childDeviceId": 4
+}
+
+###
+
+# Create an invalid parent-child link (Customer_Device-001 -> SLBN_Device-001 - should fail)
+POST {{topology_service_HostAddress}}/api/devicelink
+Content-Type: application/json
+
+{
+  "parentDeviceId": 9,
+  "childDeviceId": 1
+}
+
+###
+
+# Delete a device link
+DELETE {{topology_service_HostAddress}}/api/devicelink/1
+Accept: application/json
