@@ -8,19 +8,21 @@ using topology_service.Services;
 
 Env.TraversePath().Load();
 
-NpgsqlConnection.GlobalTypeMapper.MapEnum<DeviceType>("device_type");
-NpgsqlConnection.GlobalTypeMapper.MapEnum<DeviceStatus>("device_status");
-NpgsqlConnection.GlobalTypeMapper.MapEnum<PriorityLevel>("priority_level");
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<DeviceType>("device_type");
+dataSourceBuilder.MapEnum<DeviceStatus>("device_status");
+dataSourceBuilder.MapEnum<PriorityLevel>("priority_level");
+var dataSource = dataSourceBuilder.Build();
+
 builder.Services.AddDbContext<TopologyDbContext>(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(dataSource);
 });
 
 builder.Services.AddControllers();
