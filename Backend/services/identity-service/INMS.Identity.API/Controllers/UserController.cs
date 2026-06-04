@@ -34,4 +34,14 @@ public class UserController : ControllerBase
         await _service.Delete(id);
         return Ok();
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
+    {
+        var existing = await _service.GetById(id);
+        if (existing == null) return NotFound();
+
+        await _service.Update(id, dto.Username, dto.RoleId);
+        return Ok(new { message = "User updated" });
+    }
 }
