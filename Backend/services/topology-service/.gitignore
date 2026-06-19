@@ -87,3 +87,5 @@ logs/
 *.db
 *.db-shm
 *.db-wal
+
+.cora/

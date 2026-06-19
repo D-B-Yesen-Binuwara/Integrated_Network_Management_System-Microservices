@@ -13,6 +13,9 @@ public class TopologyDbContext : DbContext
 
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<DeviceLink> DeviceLinks => Set<DeviceLink>();
+    public DbSet<Region> Regions => Set<Region>();
+    public DbSet<Province> Provinces => Set<Province>();
+    public DbSet<LEA> LEAs => Set<LEA>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -69,6 +72,43 @@ public class TopologyDbContext : DbContext
             entity.HasOne(dl => dl.ChildDevice)
                 .WithMany()
                 .HasForeignKey(dl => dl.ChildDeviceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Region>(entity =>
+        {
+            entity.ToTable("regions");
+            entity.HasKey(r => r.RegionId);
+            entity.Property(r => r.RegionId).HasColumnName("region_id");
+            entity.Property(r => r.Name).HasColumnName("name");
+            entity.Property(r => r.Description).HasColumnName("description");
+        });
+
+        modelBuilder.Entity<Province>(entity =>
+        {
+            entity.ToTable("provinces");
+            entity.HasKey(p => p.ProvinceId);
+            entity.Property(p => p.ProvinceId).HasColumnName("province_id");
+            entity.Property(p => p.Name).HasColumnName("name");
+            entity.Property(p => p.RegionId).HasColumnName("region_id");
+
+            entity.HasOne(p => p.Region)
+                .WithMany()
+                .HasForeignKey(p => p.RegionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LEA>(entity =>
+        {
+            entity.ToTable("leas");
+            entity.HasKey(l => l.LEAId);
+            entity.Property(l => l.LEAId).HasColumnName("lea_id");
+            entity.Property(l => l.Name).HasColumnName("name");
+            entity.Property(l => l.ProvinceId).HasColumnName("province_id");
+
+            entity.HasOne(l => l.Province)
+                .WithMany()
+                .HasForeignKey(l => l.ProvinceId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
