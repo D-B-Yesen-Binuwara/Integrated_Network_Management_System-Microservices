@@ -16,6 +16,8 @@ public class TopologyDbContext : DbContext
     public DbSet<Region> Regions => Set<Region>();
     public DbSet<Province> Provinces => Set<Province>();
     public DbSet<LEA> LEAs => Set<LEA>();
+    public DbSet<Vendor> Vendors => Set<Vendor>();
+    public DbSet<DeviceVendor> DeviceVendors => Set<DeviceVendor>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,6 +111,49 @@ public class TopologyDbContext : DbContext
             entity.HasOne(l => l.Province)
                 .WithMany()
                 .HasForeignKey(l => l.ProvinceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Vendor configuration
+        modelBuilder.Entity<Vendor>(entity =>
+        {
+            entity.ToTable("vendors");
+            entity.HasKey(v => v.VendorId);
+            entity.Property(v => v.VendorId).HasColumnName("vendor_id");
+            entity.Property(v => v.Name).HasColumnName("name");
+            entity.Property(v => v.Brand).HasColumnName("brand");
+            entity.Property(v => v.DeviceType).HasColumnName("device_type")
+                .HasConversion<string>();
+            entity.Property(v => v.Description).HasColumnName("description");
+            entity.Property(v => v.IsActive).HasColumnName("is_active");
+            entity.Property(v => v.CreatedAt).HasColumnName("created_at");
+
+            entity.HasMany(v => v.DeviceVendors)
+                .WithOne(dv => dv.Vendor)
+                .HasForeignKey(dv => dv.VendorId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // DeviceVendor configuration
+        modelBuilder.Entity<DeviceVendor>(entity =>
+        {
+            entity.ToTable("device_vendors");
+            entity.HasKey(dv => dv.DeviceVendorId);
+            entity.Property(dv => dv.DeviceVendorId).HasColumnName("device_vendor_id");
+            entity.Property(dv => dv.DeviceId).HasColumnName("device_id");
+            entity.Property(dv => dv.VendorId).HasColumnName("vendor_id");
+            entity.Property(dv => dv.AssignedDate).HasColumnName("assigned_date");
+            entity.Property(dv => dv.AssignedByUser).HasColumnName("assigned_by_user");
+            entity.Property(dv => dv.IsActive).HasColumnName("is_active");
+
+            entity.HasOne(dv => dv.Device)
+                .WithMany()
+                .HasForeignKey(dv => dv.DeviceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(dv => dv.Vendor)
+                .WithMany(v => v.DeviceVendors)
+                .HasForeignKey(dv => dv.VendorId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
