@@ -4,12 +4,15 @@ A microservices-based network management system built with .NET 9, React, and mo
 
 ## 🏗️ Architecture Overview
 
-This project follows a microservices architecture pattern with the following components:
+This project follows a microservices architecture designed for a telecom NOC workflow (external alarms → topology-aware correlation → impact analysis → realtime visualization):
 
-- **API Gateway** - YARP-based reverse proxy for routing requests
-- **Identity Service** - User authentication and authorization microservice
-- **Frontend** - React + TypeScript SPA with modern UI
-- **Future Services** - Extensible architecture for additional microservices
+- **API Gateway** (YARP) - single entry point for the frontend; forwards requests to the correct microservice
+- **Identity Service** - authentication/authorization and RBAC (users, roles, account requests, area assignments)
+- **Topology Service** - manages network inventory (devices + device links) and geographic hierarchy (Region/Province/LEA)
+- **Alarm & Correlation Service** (next milestone) - ingests external alarms, runs correlation rules, and produces root-cause + impacted-device results
+- **AI & Analytics Service** (next milestone) - generates analytics/summaries from correlated events (MongoDB-backed)
+- **Frontend** (React) - dashboard UI that consumes the gateway APIs and receives realtime updates (SignalR)
+
 
 ## 📁 Project Structure
 
@@ -233,11 +236,11 @@ npm run build   # Production build test
 
 ## 📈 Future Enhancements
 
-- **Device Management Service** - Network device monitoring and configuration
-- **Notification Service** - Real-time alerts and notifications
-- **Reporting Service** - Analytics and reporting capabilities
-- **Authentication Service** - JWT-based authentication
-- **Configuration Service** - Centralized configuration management
+- **Alarm & Correlation Service completion** - external alarm ingestion, rule-based correlation, and impact propagation (MVP loop)
+- **Notification Service** - real-time alerts and notifications (SignalR)
+- **Reporting Service** - analytics and reporting capabilities (time-based insights, outage summaries)
+- **Authentication Service** - JWT-based authentication hardening and distributed auth integration
+- **Configuration Service** - centralized configuration management
 
 ## 🤝 Contributing
 
