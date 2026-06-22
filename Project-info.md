@@ -173,10 +173,11 @@ Geographic Structure:
 
 Handles:
 
-* external alarm ingestion
-* alarm storage
-* active alarm tracking
+* external/manual alarm ingestion (alarms are inserted externally into per-device-type alarm tables)
+* alarm storage (services read from existing alarm tables)
+* active alarm tracking (computed from stored alarms)
 * realtime alarm visualization
+
 
 The system assumes alarms are generated externally and inserted into the platform.
 

@@ -55,18 +55,21 @@ Correlation engine uses these links to:
 
 ## 4) Step-by-step correlation + fault localization flow
 
-### Step A — Alarm ingestion (per device type)
-**Trigger:** external system sends an alarm event.
+> Note for current stage: **alarms are inserted manually/external-to-system** into the per-device-type DB tables.
+> The services mainly **read, delete, correlate, and output results**.
 
-**Alarm & Correlation Service responsibilities:**
-1. Determine `deviceType` (SLBN/CEAN/MSAN)
-2. Normalize/validate payload
-3. Store it in the corresponding alarm table/collection
-4. Emit a domain event internally (or publish to a queue) like:
-   - `AlarmReceived` (includes alarmId, deviceId, deviceType, timestamp, area context, severity)
+### Step A — Alarm availability (per device type)
+**Trigger:** an external operator/system inserts alarms into the correct table (e.g., `SLBN_Alarms`, `CEAN_Alarms`, `MSAN_Alarms`).
+
+**Alarm & Correlation Service responsibilities (current stage):**
+1. Determine which device-type tables to query (or select based on what changed)
+2. For a given correlation request/time window, read alarms from those tables
+3. Run correlation rules to find candidate root causes
+4. Compute impacted devices (fault localization)
 
 Key design point:
-- Store first (persistence) then correlate.
+- Since ingestion is external for now, correlation should be implemented as a **query + compute** loop over the alarm tables, rather than relying on an “AlarmReceived” event/handler.
+
 
 ---
 
