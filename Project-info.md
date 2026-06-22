@@ -617,3 +617,50 @@ The goal of INMS is to simulate a realistic telecommunications fault correlation
 * analyzing cascading network impacts
 * visualizing network failures in realtime
 * demonstrating distributed system architecture principles
+
+------------ current progess, to be deleted --------------
+
+Summary mapping to your checklist
+login: ❌ not implemented
+JWT generation: ❌ not implemented
+RBAC: ✅ role + roleId + role CRUD; ❌ not enforced via JWT/claims/policies in the reviewed code
+account approvals: ✅ AccountRequestController + AccountRequestService.Approve/Reject
+user provisioning: ✅ implemented primarily during approval (Approve creates User + assigns Region/Province/LEA)
+
+------------------
+
+UserAreaAssignment (identity-service) purpose and whether it conflicts with topology-service
+
+What UserAreaAssignment is for (identity-service)
+
+It stores which Areas a given Identity User is allowed to operate on.
+In INMS.Identity.Domain/Entities/UserAreaAssignment.cs it’s a row mapping:
+UserId
+AreaType (string)
+AreaId (Guid)
+In INMS.Identity.Application/Services/UserAreaAssignmentService.cs it provides:
+AssignArea(userId, areaType, areaId)
+validates areaType is one of: Region, Province, LEA
+validates the area exists via IAreaValidator.AreaExists(areaType, areaId)
+prevents duplicate assignments
+saves to identity DB via IUserAreaAssignmentRepository
+GetUserAreas(userId)
+ReplaceUserAreas(userId, assignments)
+This is used during:
+Account approval: AccountRequestService.Approve() creates the user and then assigns Region/Province/LEA areas from the approval request.
+Manual provisioning endpoints: UserController exposes APIs to assign/replace areas for an existing user.
+Does it conflict with topology-service?
+
+No direct conflict in code structure:
+UserAreaAssignment lives in identity-service’s own database/entities.
+topology-service has its own entities (Region, Province, LEA, etc.) and its own controllers.
+The only “interaction” is conceptual/contractual:
+identity-service stores AreaType + AreaId (Guid) for Region/Province/LEA.
+topology-service likely owns the authoritative definitions of those areas.
+identity-service relies on IAreaValidator.AreaExists(areaType, areaId) to confirm referenced areas exist (implementation not shown in the files we inspected).
+Key risk to be aware of
+
+AreaType is a free-form string in identity-service.
+If topology-service uses different naming conventions (e.g., Provinces vs Province) or different ID types/sources, the validator must map correctly.
+AreaId must correspond to the same IDs used by topology-service.
+Net: UserAreaAssignment is an authorization scoping mechanism (user → allowed areas). It does not modify topology-service; it references its data logically (via AreaExists).
