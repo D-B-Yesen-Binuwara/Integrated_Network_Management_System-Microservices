@@ -1,0 +1,24 @@
+[
+  {
+    "RuleName": "SLBN Link Failure",
+    "Enabled": true,
+    "Priority": 1,
+    "SourceAlarmType": "LINK_DOWN",
+    "SourceDeviceType": "SLBN",
+    "TargetAlarmType": "NODE_UNREACHABLE",
+    "TargetDeviceType": "CEAN",
+    "MarkSourceAsRootCause": true,
+    "SuppressTargetAlarm": true
+  },
+  {
+    "RuleName": "SLBN Node Failure",
+    "Enabled": true,
+    "Priority": 2,
+    "SourceAlarmType": "NODE_DOWN",
+    "SourceDeviceType": "SLBN",
+    "TargetAlarmType": "NODE_UNREACHABLE",
+    "TargetDeviceType": "CEAN",
+    "MarkSourceAsRootCause": true,
+    "SuppressTargetAlarm": true
+  }
+]
