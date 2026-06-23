@@ -14,6 +14,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Correlation\Rules\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 
 </Project>
 

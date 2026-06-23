@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using alarm_service.Data;
 using alarm_service.Repositories;
 using alarm_service.Services;
+using alarm_service.Correlation.Engine;
 
 Env.TraversePath().Load();
 
@@ -35,6 +36,8 @@ builder.Services.AddScoped<ISLBNAlarmService, SLBNAlarmService>();
 builder.Services.AddScoped<ICEAAlarmRepository, CEAAlarmRepository>();
 builder.Services.AddScoped<ICEAAlarmService, CEAAlarmService>();
 
+builder.Services.AddSingleton<RuleLoader>();
+
 
 var app = builder.Build();
 
@@ -46,6 +49,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+var ruleLoader = app.Services.GetRequiredService<RuleLoader>();
+Console.WriteLine($"SLBN Rules Loaded : {ruleLoader.SlbnRules.Count}");
+Console.WriteLine($"CEAN Rules Loaded : {ruleLoader.CeanRules.Count}");
+Console.WriteLine($"MSAN Rules Loaded : {ruleLoader.MsanRules.Count}");
 
 app.Run();
 
