@@ -88,4 +88,9 @@ logs/
 *.db-shm
 *.db-wal
 
+# VSCode extension / analysis cache (do not commit)
 .cora/
+
+# Alarm service (non-development DB secrets)
+Backend/services/alarm-service/appsettings.json
+Backend/services/alarm-service/appsettings.Development.json
