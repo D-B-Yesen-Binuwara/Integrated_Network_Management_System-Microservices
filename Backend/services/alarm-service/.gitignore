@@ -1,0 +1,91 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.vs/
+*.user
+*.suo
+
+# Build folders
+bin/
+obj/
+*.csproj.nuget.dgspec.json
+*.csproj.nuget.g.targets
+*.csproj.nuget.g.props
+project.assets.json
+
+# Temporary files
+*.safe.sql
+.DS_Store
+
+# Logs
+*.log
+
+bin/
+obj/
+
+.sixth
+
+# ========================
+# .NET
+# ========================
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.ntvs*
+*.njsproj
+*.sw?
+
+# ========================
+# Sensitive config — never commit
+# ========================
+# appsettings.Development.json
+# appsettings.*.json
+# !appsettings.json
+
+
+# ========================
+# OS
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# EF Core local database
+# ========================
+*.db
+*.db-shm
+*.db-wal
+
+.cora/
