@@ -98,4 +98,4 @@ logs/
 
 # Alarm service (non-development DB secrets)
 Backend/services/alarm-service/appsettings.json
-
+Backend/services/alarm-service/appsettings.Development.json
