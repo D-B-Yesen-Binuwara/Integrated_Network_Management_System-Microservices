@@ -81,6 +81,70 @@ public class DeviceLinkService : IDeviceLinkService
             .ToList();
     }
 
+    public async Task<List<DeviceDto>> GetDescendantsAsync(int deviceId)
+    {
+        var descendants = new List<DeviceDto>();
+        var visited = new HashSet<int>();
+
+        await GetDescendantsRecursiveAsync(deviceId, descendants, visited);
+
+        return descendants;
+    }
+
+    private async Task GetDescendantsRecursiveAsync(int currentDeviceId, List<DeviceDto> descendants, HashSet<int> visited)
+    {
+        if (!visited.Add(currentDeviceId))
+        {
+            return; // Cycle detected, stop recursion
+        }
+
+        var childLinks = await _repository.GetChildLinksAsync(currentDeviceId);
+
+        foreach (var link in childLinks)
+        {
+            if (link.ChildDevice != null)
+            {
+                if (!visited.Contains(link.ChildDeviceId))
+                {
+                    descendants.Add(MapDeviceToDto(link.ChildDevice));
+                    await GetDescendantsRecursiveAsync(link.ChildDeviceId, descendants, visited);
+                }
+            }
+        }
+    }
+
+    public async Task<List<DeviceDto>> GetAncestorsAsync(int deviceId)
+    {
+        var ancestors = new List<DeviceDto>();
+        var visited = new HashSet<int>();
+
+        await GetAncestorsRecursiveAsync(deviceId, ancestors, visited);
+
+        return ancestors;
+    }
+
+    private async Task GetAncestorsRecursiveAsync(int currentDeviceId, List<DeviceDto> ancestors, HashSet<int> visited)
+    {
+        if (!visited.Add(currentDeviceId))
+        {
+            return; // Cycle detected, stop recursion
+        }
+
+        var parentLinks = await _repository.GetParentLinksAsync(currentDeviceId);
+
+        foreach (var link in parentLinks)
+        {
+            if (link.ParentDevice != null)
+            {
+                if (!visited.Contains(link.ParentDeviceId))
+                {
+                    ancestors.Add(MapDeviceToDto(link.ParentDevice));
+                    await GetAncestorsRecursiveAsync(link.ParentDeviceId, ancestors, visited);
+                }
+            }
+        }
+    }
+
     private async Task<bool> WouldCreateCycleAsync(int parentId, int childId)
     {
         // Recursive CTE in PostgreSQL to find if childId is already an ancestor of parentId.
