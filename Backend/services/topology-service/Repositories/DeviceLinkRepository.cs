@@ -42,4 +42,22 @@ public class DeviceLinkRepository : IDeviceLinkRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<List<DeviceLink>> GetChildLinksAsync(int parentDeviceId)
+    {
+        return await _context.DeviceLinks
+            .AsNoTracking()
+            .Include(l => l.ChildDevice)
+            .Where(l => l.ParentDeviceId == parentDeviceId)
+            .ToListAsync();
+    }
+
+    public async Task<List<DeviceLink>> GetParentLinksAsync(int childDeviceId)
+    {
+        return await _context.DeviceLinks
+            .AsNoTracking()
+            .Include(l => l.ParentDevice)
+            .Where(l => l.ChildDeviceId == childDeviceId)
+            .ToListAsync();
+    }
 }
