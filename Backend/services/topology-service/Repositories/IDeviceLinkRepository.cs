@@ -8,4 +8,6 @@ public interface IDeviceLinkRepository
     Task<List<DeviceLink>> GetAllAsync();
     Task<DeviceLink?> GetByIdAsync(int id);
     Task<bool> DeleteAsync(int id);
+    Task<List<DeviceLink>> GetChildLinksAsync(int parentDeviceId);
+    Task<List<DeviceLink>> GetParentLinksAsync(int childDeviceId);
 }

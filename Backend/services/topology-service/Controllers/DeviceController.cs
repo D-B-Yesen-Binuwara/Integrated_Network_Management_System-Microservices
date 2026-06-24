@@ -9,10 +9,12 @@ namespace topology_service.Controllers;
 public class DeviceController : ControllerBase
 {
     private readonly IDeviceService _deviceService;
+    private readonly IDeviceLinkService _deviceLinkService;
 
-    public DeviceController(IDeviceService deviceService)
+    public DeviceController(IDeviceService deviceService, IDeviceLinkService deviceLinkService)
     {
         _deviceService = deviceService;
+        _deviceLinkService = deviceLinkService;
     }
 
     [HttpGet]
@@ -47,5 +49,25 @@ public class DeviceController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         return await _deviceService.DeleteAsync(id) ? NoContent() : NotFound();
+    }
+
+    [HttpGet("{id:int}/children")]
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetChildren(int id)
+    {
+        var device = await _deviceService.GetByIdAsync(id);
+        if (device == null) return NotFound();
+
+        var children = await _deviceLinkService.GetChildrenAsync(id);
+        return Ok(children);
+    }
+
+    [HttpGet("{id:int}/parents")]
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetParents(int id)
+    {
+        var device = await _deviceService.GetByIdAsync(id);
+        if (device == null) return NotFound();
+
+        var parents = await _deviceLinkService.GetParentsAsync(id);
+        return Ok(parents);
     }
 }

@@ -4,14 +4,18 @@ using alarm_service.Entities;
 using alarm_service.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+<<<<<<< HEAD
 using alarm_service.Interfaces;
 
+=======
+>>>>>>> origin/main
 namespace alarm_service.Services;
 
 public class MSANAlarmService : IMSANAlarmService
 {
     private readonly IMSANAlarmRepository _repository;
     private readonly AlarmDbContext _context;
+<<<<<<< HEAD
     private readonly IImpactAnalysisService _impactAnalysisService;
 
     public MSANAlarmService(IMSANAlarmRepository repository, AlarmDbContext context, IImpactAnalysisService impactAnalysisService)
@@ -19,6 +23,13 @@ public class MSANAlarmService : IMSANAlarmService
         _repository = repository;
         _context = context;
         _impactAnalysisService = impactAnalysisService;
+=======
+
+    public MSANAlarmService(IMSANAlarmRepository repository, AlarmDbContext context)
+    {
+        _repository = repository;
+        _context = context;
+>>>>>>> origin/main
     }
 
     public async Task<MSANAlarmResponseDto?> GetByIdAsync(int id)
@@ -51,12 +62,15 @@ public class MSANAlarmService : IMSANAlarmService
         };
 
         var created = await _repository.AddAsync(alarm);
+<<<<<<< HEAD
 
         if (created.AlarmType == "NODE_DOWN")
         {
             await _impactAnalysisService.AnalyzeFailureAsync(created.DeviceId, created.MSANAlarmId);
         }
 
+=======
+>>>>>>> origin/main
         return ToResponseDto(created);
     }
 
@@ -76,12 +90,15 @@ public class MSANAlarmService : IMSANAlarmService
         };
 
         var updated = await _repository.UpdateAsync(updatedAlarm);
+<<<<<<< HEAD
 
         if (existing.IsActive && !updated.IsActive && updated.AlarmType == "NODE_DOWN")
         {
             await _impactAnalysisService.ClearRootCauseAsync(updated.DeviceId);
         }
 
+=======
+>>>>>>> origin/main
         return ToResponseDto(updated);
     }
 

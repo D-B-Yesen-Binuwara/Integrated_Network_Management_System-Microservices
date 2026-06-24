@@ -1,0 +1,13 @@
+[
+  {
+    "RuleName": "MSAN Port Failure",
+    "Enabled": true,
+    "Priority": 1,
+    "SourceAlarmType": "PORT_DOWN",
+    "SourceDeviceType": "MSAN",
+    "TargetAlarmType": "SERVICE_DEGRADED",
+    "TargetDeviceType": "MSAN",
+    "MarkSourceAsRootCause": true,
+    "SuppressTargetAlarm": false
+  }
+]
