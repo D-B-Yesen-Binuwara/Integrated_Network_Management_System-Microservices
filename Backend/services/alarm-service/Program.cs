@@ -37,6 +37,7 @@ builder.Services.AddScoped<ICEAAlarmRepository, CEAAlarmRepository>();
 builder.Services.AddScoped<ICEAAlarmService, CEAAlarmService>();
 
 builder.Services.AddSingleton<RuleLoader>();
+builder.Services.AddSingleton<RootCauseEngine>();
 
 
 var app = builder.Build();
