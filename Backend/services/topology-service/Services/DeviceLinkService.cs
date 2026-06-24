@@ -63,6 +63,24 @@ public class DeviceLinkService : IDeviceLinkService
         return await _repository.DeleteAsync(id);
     }
 
+    public async Task<List<DeviceDto>> GetChildrenAsync(int deviceId)
+    {
+        var links = await _repository.GetChildLinksAsync(deviceId);
+        return links
+            .Where(l => l.ChildDevice != null)
+            .Select(l => MapDeviceToDto(l.ChildDevice!))
+            .ToList();
+    }
+
+    public async Task<List<DeviceDto>> GetParentsAsync(int deviceId)
+    {
+        var links = await _repository.GetParentLinksAsync(deviceId);
+        return links
+            .Where(l => l.ParentDevice != null)
+            .Select(l => MapDeviceToDto(l.ParentDevice!))
+            .ToList();
+    }
+
     private async Task<bool> WouldCreateCycleAsync(int parentId, int childId)
     {
         // Recursive CTE in PostgreSQL to find if childId is already an ancestor of parentId.
@@ -103,6 +121,21 @@ public class DeviceLinkService : IDeviceLinkService
             ParentDeviceId = link.ParentDeviceId,
             ChildDeviceId = link.ChildDeviceId,
             LinkStatus = link.LinkStatus
+        };
+    }
+
+    private static DeviceDto MapDeviceToDto(Device device)
+    {
+        return new DeviceDto
+        {
+            DeviceId = device.DeviceId,
+            DeviceName = device.DeviceName,
+            DeviceType = device.DeviceType,
+            IP = device.IP,
+            Status = device.Status,
+            PriorityLevel = device.PriorityLevel,
+            Latitude = device.Latitude,
+            Longitude = device.Longitude
         };
     }
 }
