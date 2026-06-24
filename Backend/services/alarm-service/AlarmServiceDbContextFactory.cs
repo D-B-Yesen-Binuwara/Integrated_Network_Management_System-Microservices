@@ -3,6 +3,7 @@ using alarm_service.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
+
 namespace alarm_service;
 
 public class AlarmServiceDbContextFactory : IDesignTimeDbContextFactory<AlarmDbContext>
@@ -24,6 +25,7 @@ public class AlarmServiceDbContextFactory : IDesignTimeDbContextFactory<AlarmDbC
                                ?? "Host=localhost;Database=alarm_inms;Username=postgres;Password=postgres";
 
         optionsBuilder.UseNpgsql(connectionString);
+
         return new AlarmDbContext(optionsBuilder.Options);
     }
 }

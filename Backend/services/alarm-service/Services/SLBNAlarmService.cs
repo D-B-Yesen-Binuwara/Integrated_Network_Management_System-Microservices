@@ -4,6 +4,7 @@ using alarm_service.Entities;
 using alarm_service.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace alarm_service.Services;
 
 public class SLBNAlarmService : ISLBNAlarmService
@@ -15,6 +16,7 @@ public class SLBNAlarmService : ISLBNAlarmService
     {
         _repository = repository;
         _context = context;
+
     }
 
     public async Task<SLBNAlarmResponseDto?> GetByIdAsync(int id)
@@ -47,6 +49,7 @@ public class SLBNAlarmService : ISLBNAlarmService
         };
 
         var created = await _repository.AddAsync(alarm);
+
         return ToResponseDto(created);
     }
 
@@ -66,6 +69,7 @@ public class SLBNAlarmService : ISLBNAlarmService
         };
 
         var updated = await _repository.UpdateAsync(updatedAlarm);
+
         return ToResponseDto(updated);
     }
 

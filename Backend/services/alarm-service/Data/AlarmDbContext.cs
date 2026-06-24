@@ -13,6 +13,7 @@ public class AlarmDbContext : DbContext
     public DbSet<SLBNAlarm> SLBNAlarms => Set<SLBNAlarm>();
     public DbSet<CEAAlarm> CEAAlarms => Set<CEAAlarm>();
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -55,6 +56,7 @@ public class AlarmDbContext : DbContext
             entity.Property(e => e.ClearedTime).HasColumnName("ClearedTime");
             entity.Property(e => e.IsActive).HasColumnName("IsActive");
         });
+
     }
 }
 

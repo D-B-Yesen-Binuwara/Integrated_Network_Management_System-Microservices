@@ -4,6 +4,7 @@ using alarm_service.Entities;
 using alarm_service.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace alarm_service.Services;
 
 public class MSANAlarmService : IMSANAlarmService
@@ -15,6 +16,7 @@ public class MSANAlarmService : IMSANAlarmService
     {
         _repository = repository;
         _context = context;
+
     }
 
     public async Task<MSANAlarmResponseDto?> GetByIdAsync(int id)
@@ -47,6 +49,7 @@ public class MSANAlarmService : IMSANAlarmService
         };
 
         var created = await _repository.AddAsync(alarm);
+
         return ToResponseDto(created);
     }
 
@@ -66,6 +69,7 @@ public class MSANAlarmService : IMSANAlarmService
         };
 
         var updated = await _repository.UpdateAsync(updatedAlarm);
+
         return ToResponseDto(updated);
     }
 

@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AlarmDbContext>(options =>
     options.UseNpgsql(dataSource);
 });
 
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,6 +41,7 @@ builder.Services.AddSingleton<RuleLoader>();
 builder.Services.AddSingleton<RootCauseEngine>();
 
 
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -55,6 +57,7 @@ var ruleLoader = app.Services.GetRequiredService<RuleLoader>();
 Console.WriteLine($"SLBN Rules Loaded : {ruleLoader.SlbnRules.Count}");
 Console.WriteLine($"CEAN Rules Loaded : {ruleLoader.CeanRules.Count}");
 Console.WriteLine($"MSAN Rules Loaded : {ruleLoader.MsanRules.Count}");
+
 
 app.Run();
 
