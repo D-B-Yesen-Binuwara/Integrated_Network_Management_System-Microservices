@@ -120,3 +120,167 @@ COMMENT ON COLUMN device_links.link_id IS 'Unique identifier for each device lin
 COMMENT ON COLUMN device_links.parent_device_id IS 'Foreign key referencing the parent device';
 COMMENT ON COLUMN device_links.child_device_id IS 'Foreign key referencing the child device';
 COMMENT ON COLUMN device_links.link_status IS 'Current status of the connection link';
+
+----- TABLES Other than devices -----------------
+
+-- Topology Service schema (PostgreSQL)
+-- Creates the tables related to topology service based on current entity layer + DbContext mappings.
+
+-- =========================================================
+-- (Optional) Create DB
+-- =========================================================
+-- CREATE DATABASE "INMS.Topology"
+--     WITH OWNER = postgres
+--     ENCODING = 'UTF8'
+--     LC_COLLATE = 'English_British Indian Ocean Territory.1252'
+--     LC_CTYPE = 'English_British Indian Ocean Territory.1252'
+--     LOCALE_PROVIDER = 'libc'
+--     TABLESPACE = pg_default
+--     CONNECTION LIMIT = -1
+--     IS_TEMPLATE = False;
+
+-- =========================================================
+-- Types (enums)
+-- =========================================================
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'device_type') THEN
+        CREATE TYPE device_type AS ENUM ('SLBN', 'CEAN', 'MSAN', 'Customer');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'device_status') THEN
+        CREATE TYPE device_status AS ENUM ('UP', 'DOWN', 'UNREACHABLE', 'IMPACTED');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'priority_level') THEN
+        CREATE TYPE priority_level AS ENUM ('Low', 'Avg', 'High', 'Critical');
+    END IF;
+END$$;
+
+-- =========================================================
+-- devices
+-- =========================================================
+CREATE TABLE IF NOT EXISTS devices (
+    device_id      SERIAL PRIMARY KEY,
+    device_name    VARCHAR(100) NOT NULL,
+    device_type    device_type NOT NULL,
+    ip              VARCHAR(50)  NOT NULL,
+    status         device_status NOT NULL DEFAULT 'UP',
+    priority_level priority_level NOT NULL DEFAULT 'Low',
+    latitude       DECIMAL(9, 6) NOT NULL,
+    longitude      DECIMAL(9, 6) NOT NULL,
+    created_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    -- Constraints
+    CONSTRAINT chk_latitude  CHECK (latitude  >= -90  AND latitude <=  90),
+    CONSTRAINT chk_longitude CHECK (longitude >= -180 AND longitude <= 180),
+    CONSTRAINT chk_ip_format CHECK (
+        ip ~ '^[0-9a-fA-F:.]+$'
+        OR ip ~ '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
+    ),
+    CONSTRAINT uq_device_name UNIQUE(device_name),
+    CONSTRAINT uq_ip UNIQUE(ip)
+);
+
+CREATE INDEX IF NOT EXISTS idx_devices_status         ON devices(status);
+CREATE INDEX IF NOT EXISTS idx_devices_device_type     ON devices(device_type);
+CREATE INDEX IF NOT EXISTS idx_devices_priority_level  ON devices(priority_level);
+CREATE INDEX IF NOT EXISTS idx_devices_location       ON devices(latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_devices_created_at      ON devices(created_at);
+
+-- =========================================================
+-- device_links
+-- =========================================================
+CREATE TABLE IF NOT EXISTS device_links (
+    link_id           SERIAL PRIMARY KEY,
+    parent_device_id INT NOT NULL,
+    child_device_id  INT NOT NULL,
+    link_status       VARCHAR(50) NOT NULL DEFAULT 'UP',
+
+    CONSTRAINT fk_device_links_parent
+        FOREIGN KEY (parent_device_id) REFERENCES devices(device_id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_device_links_child
+        FOREIGN KEY (child_device_id) REFERENCES devices(device_id) ON DELETE CASCADE,
+
+    CONSTRAINT uq_parent_child UNIQUE(parent_device_id, child_device_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_device_links_parent_child
+    ON device_links(parent_device_id, child_device_id);
+
+-- =========================================================
+-- regions
+-- =========================================================
+CREATE TABLE IF NOT EXISTS regions (
+    region_id  SERIAL PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    description TEXT NULL
+);
+
+-- =========================================================
+-- provinces
+-- =========================================================
+CREATE TABLE IF NOT EXISTS provinces (
+    province_id SERIAL PRIMARY KEY,
+    name         VARCHAR(255) NOT NULL,
+    region_id    INT NOT NULL,
+
+    CONSTRAINT fk_provinces_region
+        FOREIGN KEY (region_id) REFERENCES regions(region_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_provinces_region_id ON provinces(region_id);
+
+-- =========================================================
+-- leas (LEA)
+-- =========================================================
+CREATE TABLE IF NOT EXISTS leas (
+    lea_id      SERIAL PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    province_id INT NOT NULL,
+
+    CONSTRAINT fk_leas_province
+        FOREIGN KEY (province_id) REFERENCES provinces(province_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_leas_province_id ON leas(province_id);
+
+-- =========================================================
+-- vendors
+-- =========================================================
+CREATE TABLE IF NOT EXISTS vendors (
+    vendor_id   SERIAL PRIMARY KEY,
+    name         VARCHAR(100) NOT NULL,
+    brand        VARCHAR(50) NOT NULL,
+    device_type  device_type NOT NULL,
+    description  VARCHAR(255) NULL,
+    is_active    BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_vendors_device_type ON vendors(device_type);
+CREATE INDEX IF NOT EXISTS idx_vendors_is_active     ON vendors(is_active);
+
+-- =========================================================
+-- device_vendors (junction for Device <-> Vendor)
+-- =========================================================
+CREATE TABLE IF NOT EXISTS device_vendors (
+    device_vendor_id SERIAL PRIMARY KEY,
+    device_id    INT NOT NULL,
+    vendor_id    INT NOT NULL,
+    assigned_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    assigned_by_user VARCHAR(100) NULL,
+    is_active     BOOLEAN NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT fk_device_vendors_device
+        FOREIGN KEY (device_id) REFERENCES devices(device_id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_device_vendors_vendor
+        FOREIGN KEY (vendor_id) REFERENCES vendors(vendor_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_device_vendors_device_id ON device_vendors(device_id);
+CREATE INDEX IF NOT EXISTS idx_device_vendors_vendor_id ON device_vendors(vendor_id);
+CREATE INDEX IF NOT EXISTS idx_device_vendors_is_active ON device_vendors(is_active);

@@ -14,17 +14,19 @@ public class AlarmServiceDbContextFactory : IDesignTimeDbContextFactory<AlarmDbC
         var optionsBuilder = new DbContextOptionsBuilder<AlarmDbContext>();
 
         // Use same connection-string source as runtime: DefaultConnection from env/appsettings.
-        // If env/connection string isn't available for migration generation,
-        // this will fall back to appsettings.json.
+        // IMPORTANT: no hard-coded fallback; migrations should fail fast if configuration is missing.
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-                               ?? "Host=localhost;Database=alarm_inms;Username=postgres;Password=postgres";
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "Database connection string 'DefaultConnection' is missing. " +
+                "Ensure it is provided via .env (loaded above) or environment variables for migrations/runtime.");
+        }
+
 
         optionsBuilder.UseNpgsql(connectionString);
         return new AlarmDbContext(optionsBuilder.Options);
