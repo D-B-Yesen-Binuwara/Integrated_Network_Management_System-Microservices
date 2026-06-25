@@ -7,4 +7,8 @@ public interface IDeviceLinkService
     Task<DeviceLinkDto> CreateLinkAsync(CreateDeviceLinkDto dto);
     Task<List<DeviceLinkDto>> GetAllLinksAsync();
     Task<bool> DeleteLinkAsync(int id);
+    Task<List<DeviceDto>> GetChildrenAsync(int deviceId);
+    Task<List<DeviceDto>> GetParentsAsync(int deviceId);
+    Task<List<DeviceDto>> GetDescendantsAsync(int deviceId);
+    Task<List<DeviceDto>> GetAncestorsAsync(int deviceId);
 }

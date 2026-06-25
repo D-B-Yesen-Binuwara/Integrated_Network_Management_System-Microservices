@@ -1,0 +1,10 @@
+Step 1: Analyzed the user request.
+Step 2: Read `Corelation-Day-Plan.md`, `Correlation-Engine.md`, and `New-Plan.md` in `alarm-service/NOTES` to understand the goal.
+Step 3: Learned that `topology-service` needs methods in `IDeviceLinkService` and `DeviceLinkService` for traversing the device topology:
+  - `GetChildrenAsync`
+  - `GetParentsAsync`
+  - `GetDescendantsAsync`
+  - `GetAncestorsAsync`
+Step 4: Verified that `GetChildrenAsync` and `GetParentsAsync` are already implemented in `DeviceLinkService.cs` and `GetChildLinksAsync` and `GetParentLinksAsync` are implemented in `DeviceLinkRepository.cs`.
+Step 5: Implemented `GetDescendantsAsync` (DFS downward with `GetChildLinksAsync` and `visited` set) and `GetAncestorsAsync` (DFS upward with `GetParentLinksAsync` and `visited` set). The recursion functions (`GetDescendantsRecursiveAsync` and `GetAncestorsRecursiveAsync`) were used to populate the descendant and ancestor list in a HashSet to detect cycles. I chose DFS and the HashSet based approach as requested in the plan to prevent infinite loops, and `GetChildLinksAsync` automatically provides the child objects via `.Include()`.
+Step 6: Logged these actions in the `TEMP.txt` file in the root directory.
