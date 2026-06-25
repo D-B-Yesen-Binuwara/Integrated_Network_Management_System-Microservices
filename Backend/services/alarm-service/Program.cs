@@ -5,6 +5,8 @@ using alarm_service.Data;
 using alarm_service.Repositories;
 using alarm_service.Services;
 using alarm_service.Correlation.Engine;
+using alarm_service.Correlation.Topology;
+using alarm_service.Interfaces;
 
 Env.TraversePath().Load();
 
@@ -39,6 +41,16 @@ builder.Services.AddScoped<ICEAAlarmService, CEAAlarmService>();
 builder.Services.AddSingleton<RuleLoader>();
 builder.Services.AddSingleton<RootCauseEngine>();
 
+builder.Services.AddScoped<IRootCauseRepository, RootCauseRepository>();
+builder.Services.AddScoped<IImpactedDeviceRepository, ImpactedDeviceRepository>();
+
+builder.Services.AddHttpClient<ITopologyClient, TopologyClient>(client =>
+{
+    var baseUrl = builder.Configuration["TopologyService:BaseUrl"] ?? "http://localhost:5102";
+    client.BaseAddress = new Uri(baseUrl);
+});
+
+builder.Services.AddScoped<IImpactAnalysisService, ImpactAnalysisService>();
 
 var app = builder.Build();
 
