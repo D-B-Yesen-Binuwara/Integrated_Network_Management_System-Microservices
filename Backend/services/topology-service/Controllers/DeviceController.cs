@@ -70,4 +70,24 @@ public class DeviceController : ControllerBase
         var parents = await _deviceLinkService.GetParentsAsync(id);
         return Ok(parents);
     }
+
+    [HttpGet("{id:int}/descendants")]
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetDescendants(int id)
+    {
+        var device = await _deviceService.GetByIdAsync(id);
+        if (device == null) return NotFound();
+
+        var descendants = await _deviceLinkService.GetDescendantsAsync(id);
+        return Ok(descendants);
+    }
+
+    [HttpGet("{id:int}/ancestors")]
+    public async Task<ActionResult<IEnumerable<DeviceDto>>> GetAncestors(int id)
+    {
+        var device = await _deviceService.GetByIdAsync(id);
+        if (device == null) return NotFound();
+
+        var ancestors = await _deviceLinkService.GetAncestorsAsync(id);
+        return Ok(ancestors);
+    }
 }
