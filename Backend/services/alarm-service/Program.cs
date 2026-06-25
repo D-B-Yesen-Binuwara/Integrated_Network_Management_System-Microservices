@@ -1,17 +1,29 @@
+using DotNetEnv;
 using Npgsql;
 using Microsoft.EntityFrameworkCore;
 using alarm_service.Data;
 using alarm_service.Repositories;
 using alarm_service.Services;
+using alarm_service.Correlation.Engine;
+using alarm_service.Correlation.Topology;
 using alarm_service.Interfaces;
-using alarm_service.Clients;
+
+Env.TraversePath().Load();
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AlarmDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Configuration.AddEnvironmentVariables();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+var dataSource = dataSourceBuilder.Build();
+
+builder.Services.AddDbContext<AlarmDbContext>(options =>
+{
+    options.UseNpgsql(dataSource);
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,16 +38,19 @@ builder.Services.AddScoped<ISLBNAlarmService, SLBNAlarmService>();
 builder.Services.AddScoped<ICEAAlarmRepository, CEAAlarmRepository>();
 builder.Services.AddScoped<ICEAAlarmService, CEAAlarmService>();
 
+builder.Services.AddSingleton<RuleLoader>();
+builder.Services.AddSingleton<RootCauseEngine>();
+
 builder.Services.AddScoped<IRootCauseRepository, RootCauseRepository>();
 builder.Services.AddScoped<IImpactedDeviceRepository, ImpactedDeviceRepository>();
-builder.Services.AddScoped<IImpactAnalysisService, ImpactAnalysisService>();
 
 builder.Services.AddHttpClient<ITopologyClient, TopologyClient>(client =>
 {
-    var topologyUrl = builder.Configuration["TopologyServiceUrl"] ?? "http://localhost:5001";
-    client.BaseAddress = new Uri(topologyUrl);
+    var baseUrl = builder.Configuration["TopologyService:BaseUrl"] ?? "http://localhost:5102";
+    client.BaseAddress = new Uri(baseUrl);
 });
 
+builder.Services.AddScoped<IImpactAnalysisService, ImpactAnalysisService>();
 
 var app = builder.Build();
 
@@ -45,14 +60,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<AlarmDbContext>();
-    context.Database.Migrate();
-}
-
 app.UseHttpsRedirection();
 app.MapControllers();
+
+var ruleLoader = app.Services.GetRequiredService<RuleLoader>();
+Console.WriteLine($"SLBN Rules Loaded : {ruleLoader.SlbnRules.Count}");
+Console.WriteLine($"CEAN Rules Loaded : {ruleLoader.CeanRules.Count}");
+Console.WriteLine($"MSAN Rules Loaded : {ruleLoader.MsanRules.Count}");
 
 app.Run();
 

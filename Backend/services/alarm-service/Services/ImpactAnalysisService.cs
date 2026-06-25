@@ -1,7 +1,7 @@
 using alarm_service.DTOs.Responses;
 using alarm_service.Entities;
 using alarm_service.Interfaces;
-using alarm_service.Clients;
+using alarm_service.Correlation.Topology;
 
 namespace alarm_service.Services;
 
@@ -28,7 +28,7 @@ public class ImpactAnalysisService : IImpactAnalysisService
     {
         _logger.LogInformation("Analyzing failure for DeviceId {DeviceId} and AlarmId {AlarmId}", deviceId, alarmId);
 
-        var parentDevices = await _topologyClient.GetParentDevicesAsync(deviceId);
+        var parentDevices = await _topologyClient.GetParentsAsync(deviceId);
         bool isRootFailure = true;
 
         if (parentDevices.Any())
@@ -158,43 +158,17 @@ public class ImpactAnalysisService : IImpactAnalysisService
 
     private async Task<RootCause?> FindUpstreamRootCause(int deviceId, IEnumerable<RootCause> rootCauses)
     {
-        var allLinks = await _topologyClient.GetAllLinksAsync();
-        var parentAdjacency = new Dictionary<int, List<int>>();
-
-        foreach (var link in allLinks)
-        {
-            if (!parentAdjacency.TryGetValue(link.ChildDeviceId, out var parents))
-            {
-                parents = new List<int>();
-                parentAdjacency[link.ChildDeviceId] = parents;
-            }
-            parents.Add(link.ParentDeviceId);
-        }
-
-        var visited = new HashSet<int> { deviceId };
-        var queue = new Queue<int>();
-        queue.Enqueue(deviceId);
+        var ancestors = await _topologyClient.GetAncestorsAsync(deviceId);
+        var ancestorIds = ancestors.Select(a => a.DeviceId).ToHashSet();
+        
         var rootCauseDict = rootCauses.ToDictionary(rc => rc.DeviceId);
-
-        while (queue.Count > 0)
+        
+        // Find if any ancestor is an active root cause
+        foreach (var ancestorId in ancestorIds)
         {
-            var current = queue.Dequeue();
-
-            if (!parentAdjacency.TryGetValue(current, out var parents))
+            if (rootCauseDict.TryGetValue(ancestorId, out var rc))
             {
-                continue;
-            }
-
-            foreach (var parentId in parents)
-            {
-                if (!visited.Add(parentId)) continue;
-
-                if (rootCauseDict.TryGetValue(parentId, out var rc))
-                {
-                    return rc;
-                }
-
-                queue.Enqueue(parentId);
+                return rc;
             }
         }
 
@@ -203,43 +177,8 @@ public class ImpactAnalysisService : IImpactAnalysisService
 
     private async Task<HashSet<int>> GetDownstreamDeviceIdsAsync(int rootDeviceId)
     {
-        var allLinks = await _topologyClient.GetAllLinksAsync();
-        var adjacency = new Dictionary<int, List<int>>();
-
-        foreach (var link in allLinks)
-        {
-            if (!adjacency.TryGetValue(link.ParentDeviceId, out var children))
-            {
-                children = new List<int>();
-                adjacency[link.ParentDeviceId] = children;
-            }
-            children.Add(link.ChildDeviceId);
-        }
-
-        var visited = new HashSet<int> { rootDeviceId };
-        var impacted = new HashSet<int>();
-        var queue = new Queue<int>();
-        queue.Enqueue(rootDeviceId);
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-
-            if (!adjacency.TryGetValue(current, out var children))
-            {
-                continue;
-            }
-
-            foreach (var childId in children)
-            {
-                if (!visited.Add(childId)) continue;
-
-                impacted.Add(childId);
-                queue.Enqueue(childId);
-            }
-        }
-
-        return impacted;
+        var descendants = await _topologyClient.GetDescendantsAsync(rootDeviceId);
+        return descendants.Select(d => d.DeviceId).ToHashSet();
     }
 
     private async Task RebuildImpactedDevicesAsync(int rootCauseId, int rootDeviceId, HashSet<int> impactedDeviceIds)

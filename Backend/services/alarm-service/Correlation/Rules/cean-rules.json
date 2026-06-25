@@ -1,0 +1,24 @@
+[
+  {
+    "RuleName": "CEAN Link Failure",
+    "Enabled": true,
+    "Priority": 1,
+    "SourceAlarmType": "LINK_DOWN",
+    "SourceDeviceType": "CEAN",
+    "TargetAlarmType": "NODE_UNREACHABLE",
+    "TargetDeviceType": "MSAN",
+    "MarkSourceAsRootCause": true,
+    "SuppressTargetAlarm": true
+  },
+  {
+    "RuleName": "CEAN Node Failure",
+    "Enabled": true,
+    "Priority": 2,
+    "SourceAlarmType": "NODE_DOWN",
+    "SourceDeviceType": "CEAN",
+    "TargetAlarmType": "NODE_UNREACHABLE",
+    "TargetDeviceType": "MSAN",
+    "MarkSourceAsRootCause": true,
+    "SuppressTargetAlarm": true
+  }
+]
