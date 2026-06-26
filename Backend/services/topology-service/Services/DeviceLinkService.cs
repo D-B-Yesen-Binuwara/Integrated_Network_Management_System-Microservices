@@ -104,11 +104,8 @@ public class DeviceLinkService : IDeviceLinkService
         {
             if (link.ChildDevice != null)
             {
-                if (!visited.Contains(link.ChildDeviceId))
-                {
-                    descendants.Add(MapDeviceToDto(link.ChildDevice));
-                    await GetDescendantsRecursiveAsync(link.ChildDeviceId, descendants, visited);
-                }
+                descendants.Add(MapDeviceToDto(link.ChildDevice));
+                await GetDescendantsRecursiveAsync(link.ChildDeviceId, descendants, visited);
             }
         }
     }
@@ -136,11 +133,8 @@ public class DeviceLinkService : IDeviceLinkService
         {
             if (link.ParentDevice != null)
             {
-                if (!visited.Contains(link.ParentDeviceId))
-                {
-                    ancestors.Add(MapDeviceToDto(link.ParentDevice));
-                    await GetAncestorsRecursiveAsync(link.ParentDeviceId, ancestors, visited);
-                }
+                ancestors.Add(MapDeviceToDto(link.ParentDevice));
+                await GetAncestorsRecursiveAsync(link.ParentDeviceId, ancestors, visited);
             }
         }
     }
