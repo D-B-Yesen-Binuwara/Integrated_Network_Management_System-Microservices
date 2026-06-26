@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using alarm_service.DTOs;
-using alarm_service.Services;
+using alarm_service.Services.Implement;
+
 
 namespace alarm_service.Controllers;
 

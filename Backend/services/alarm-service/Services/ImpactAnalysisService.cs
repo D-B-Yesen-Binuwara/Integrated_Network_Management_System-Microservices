@@ -1,7 +1,7 @@
 using alarm_service.DTOs.Responses;
 using alarm_service.Entities;
-using alarm_service.Interfaces;
-using alarm_service.Correlation.Topology;
+using alarm_service.Repositories.Interfaces;
+using alarm_service.Services.Implement;
 
 namespace alarm_service.Services;
 

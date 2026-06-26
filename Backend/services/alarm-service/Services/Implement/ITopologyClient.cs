@@ -1,6 +1,6 @@
-using alarm_service.Correlation.Models;
+using alarm_service.DTOs;
 
-namespace alarm_service.Correlation.Topology;
+namespace alarm_service.Services.Implement;
 
 public interface ITopologyClient
 {

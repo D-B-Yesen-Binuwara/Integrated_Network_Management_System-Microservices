@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using alarm_service.Data;
 using alarm_service.Entities;
+using alarm_service.Repositories.Interfaces;
 
 namespace alarm_service.Repositories;
 

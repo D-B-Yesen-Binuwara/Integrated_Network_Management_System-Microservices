@@ -1,7 +1,8 @@
 using System.Net.Http.Json;
-using alarm_service.Correlation.Models;
+using alarm_service.DTOs;
+using alarm_service.Services.Implement;
 
-namespace alarm_service.Correlation.Topology;
+namespace alarm_service.Services;
 
 public class TopologyClient : ITopologyClient
 {

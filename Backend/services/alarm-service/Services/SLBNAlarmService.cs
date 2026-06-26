@@ -2,9 +2,9 @@ using alarm_service.Data;
 using alarm_service.DTOs;
 using alarm_service.Entities;
 using alarm_service.Repositories;
+using alarm_service.Repositories.Interfaces;
+using alarm_service.Services.Implement;
 using Microsoft.EntityFrameworkCore;
-
-using alarm_service.Interfaces;
 
 namespace alarm_service.Services;
 

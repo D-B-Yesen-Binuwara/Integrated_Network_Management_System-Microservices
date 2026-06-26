@@ -25,6 +25,8 @@ builder.Services.AddScoped<IAccountRequestService, AccountRequestService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<UserAreaAssignmentService>();
 
+builder.Services.AddScoped<IAreaValidator, DefaultAreaValidator>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

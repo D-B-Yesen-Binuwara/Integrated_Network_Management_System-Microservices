@@ -89,3 +89,5 @@ logs/
 *.db-wal
 
 .cora/
+
+.env

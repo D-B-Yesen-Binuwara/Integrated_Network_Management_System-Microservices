@@ -1,6 +1,6 @@
 using alarm_service.Entities;
 
-namespace alarm_service.Interfaces;
+namespace alarm_service.Repositories.Interfaces;
 
 public interface IRootCauseRepository
 {

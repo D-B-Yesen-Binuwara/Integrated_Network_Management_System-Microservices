@@ -3,10 +3,11 @@ using Npgsql;
 using Microsoft.EntityFrameworkCore;
 using alarm_service.Data;
 using alarm_service.Repositories;
+using alarm_service.Repositories.Interfaces;
+using alarm_service.Services.Implement;
 using alarm_service.Services;
+
 using alarm_service.Correlation.Engine;
-using alarm_service.Correlation.Topology;
-using alarm_service.Interfaces;
 
 Env.TraversePath().Load();
 
