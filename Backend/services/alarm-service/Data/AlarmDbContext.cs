@@ -12,6 +12,8 @@ public class AlarmDbContext : DbContext
     public DbSet<MSANAlarm> MSANAlarms => Set<MSANAlarm>();
     public DbSet<SLBNAlarm> SLBNAlarms => Set<SLBNAlarm>();
     public DbSet<CEAAlarm> CEAAlarms => Set<CEAAlarm>();
+    public DbSet<RootCause> RootCauses => Set<RootCause>();
+    public DbSet<ImpactedDevice> ImpactedDevices => Set<ImpactedDevice>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,6 +57,12 @@ public class AlarmDbContext : DbContext
             entity.Property(e => e.ClearedTime).HasColumnName("ClearedTime");
             entity.Property(e => e.IsActive).HasColumnName("IsActive");
         });
+
+        modelBuilder.Entity<RootCause>()
+            .HasMany(r => r.ImpactedDevices)
+            .WithOne(i => i.RootCause)
+            .HasForeignKey(i => i.RootCauseId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
