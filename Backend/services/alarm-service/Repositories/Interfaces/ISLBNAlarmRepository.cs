@@ -1,6 +1,6 @@
 using alarm_service.Entities;
 
-namespace alarm_service.Repositories;
+namespace alarm_service.Repositories.Interfaces;
 
 public interface ISLBNAlarmRepository
 {

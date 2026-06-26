@@ -1,6 +1,6 @@
 using alarm_service.DTOs.Responses;
 
-namespace alarm_service.Interfaces;
+namespace alarm_service.Services.Implement;
 
 public interface IImpactAnalysisService
 {

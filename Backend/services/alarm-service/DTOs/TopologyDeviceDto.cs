@@ -1,4 +1,4 @@
-namespace alarm_service.Correlation.Models;
+namespace alarm_service.DTOs;
 
 public class TopologyDeviceDto
 {

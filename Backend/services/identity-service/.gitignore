@@ -100,6 +100,3 @@ logs/
 Backend/services/alarm-service/appsettings.json
 
 .env
-
-postman/
-.postman/

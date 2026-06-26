@@ -1,6 +1,6 @@
 using alarm_service.DTOs;
 
-namespace alarm_service.Services;
+namespace alarm_service.Services.Implement;
 
 public interface ISLBNAlarmService
 {
