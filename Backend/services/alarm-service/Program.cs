@@ -41,6 +41,7 @@ builder.Services.AddScoped<ICEAAlarmService, CEAAlarmService>();
 
 builder.Services.AddSingleton<RuleLoader>();
 builder.Services.AddSingleton<RootCauseEngine>();
+builder.Services.AddScoped<ImpactAnalysisEngine>();
 
 builder.Services.AddScoped<IRootCauseRepository, RootCauseRepository>();
 builder.Services.AddScoped<IImpactedDeviceRepository, ImpactedDeviceRepository>();
