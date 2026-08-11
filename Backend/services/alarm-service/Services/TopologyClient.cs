@@ -19,7 +19,7 @@ public class TopologyClient : ITopologyClient
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<TopologyDeviceDto>($"/api/device/{deviceId}");
+            var response = await _httpClient.GetFromJsonAsync<TopologyDeviceDto>($"api/device/{deviceId}");
             return response;
         }
         catch (Exception ex)
@@ -33,7 +33,7 @@ public class TopologyClient : ITopologyClient
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"/api/device/{deviceId}/children");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/children");
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)
@@ -47,7 +47,7 @@ public class TopologyClient : ITopologyClient
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"/api/device/{deviceId}/parents");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/parents");
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)
@@ -61,7 +61,7 @@ public class TopologyClient : ITopologyClient
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"/api/device/{deviceId}/descendants");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/descendants");
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)
@@ -75,7 +75,7 @@ public class TopologyClient : ITopologyClient
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"/api/device/{deviceId}/ancestors");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/ancestors");
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)

@@ -11,7 +11,6 @@ using alarm_service.Correlation.Engine;
 
 Env.TraversePath().Load();
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
@@ -46,10 +45,16 @@ builder.Services.AddScoped<ImpactAnalysisEngine>();
 builder.Services.AddScoped<IRootCauseRepository, RootCauseRepository>();
 builder.Services.AddScoped<IImpactedDeviceRepository, ImpactedDeviceRepository>();
 
+var topologyServiceBaseUrl = builder.Configuration["TopologyService:BaseUrl"];
+
+if (!Uri.TryCreate(EnsureTrailingSlash(topologyServiceBaseUrl), UriKind.Absolute, out var topologyServiceUri))
+{
+    throw new InvalidOperationException("TopologyService:BaseUrl must be configured with a valid absolute URI.");
+}
+
 builder.Services.AddHttpClient<ITopologyClient, TopologyClient>(client =>
 {
-    var baseUrl = builder.Configuration["TopologyService:BaseUrl"] ?? "http://localhost:5102";
-    client.BaseAddress = new Uri(baseUrl);
+    client.BaseAddress = topologyServiceUri;
 });
 
 builder.Services.AddScoped<IImpactAnalysisService, ImpactAnalysisService>();
@@ -71,4 +76,9 @@ Console.WriteLine($"CEAN Rules Loaded : {ruleLoader.CeanRules.Count}");
 Console.WriteLine($"MSAN Rules Loaded : {ruleLoader.MsanRules.Count}");
 
 app.Run();
+
+static string EnsureTrailingSlash(string? value) =>
+    string.IsNullOrWhiteSpace(value)
+        ? string.Empty
+        : value.EndsWith('/') ? value : $"{value}/";
 
