@@ -1,8 +1,8 @@
 /**
  * Small, dependency-free HTTP client used by all frontend service modules.
  *
- * The frontend talks to the gateway only. In development we use the HTTPS
- * gateway default; production builds must provide VITE_API_BASE_URL explicitly.
+ * The frontend talks to the gateway only. Local development provides the HTTP
+ * gateway URL in .env.local; production builds must configure this explicitly.
  */
 const configuredBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim()
 export const API_BASE_URL = (configuredBaseUrl || (import.meta.env.DEV ? 'https://localhost:7030' : '')).replace(/\/$/, '')
@@ -43,6 +43,17 @@ export async function fetchJson<T>(path: string, signal?: AbortSignal, init?: Re
   return response.json() as Promise<T>
 }
 
+/** Sends a JSON command through the same guarded transport as read requests. */
+export function requestJson<T>(path: string, method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', body?: unknown, signal?: AbortSignal) {
+  return fetchJson<T>(path, signal, {
+    method,
+    body: body === undefined ? undefined : JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
 async function readErrorMessage(response: Response): Promise<string> {
   try {
     const body: unknown = await response.json()
@@ -61,5 +72,5 @@ async function readErrorMessage(response: Response): Promise<string> {
 export function apiSetupMessage(): string {
   return API_BASE_URL
     ? `The request was sent through ${API_BASE_URL}.`
-    : 'Set VITE_API_BASE_URL to the HTTPS gateway URL for this environment.'
+    : 'Set VITE_API_BASE_URL to the gateway URL for this environment.'
 }

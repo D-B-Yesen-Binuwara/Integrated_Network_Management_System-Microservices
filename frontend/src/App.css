@@ -129,7 +129,10 @@ h1 { color: var(--ink); font-family: 'Space Grotesk', sans-serif; font-size: cla
 @media (max-width: 450px) { .metric-grid { gap: 9px; } .metric-card { padding: 13px; min-height: 127px; } .metric-value { font-size: 27px; } .metric-icon { width: 28px; height: 28px; } .panel { padding: 15px; } .filter-bar .tab-list { width: 100%; overflow-x: auto; } }
 
 /* Leaflet canvas and operational marker styles. */
-.device-map { min-height: 520px; width: 100%; overflow: hidden; border: 1px solid #d8ebe7; border-radius: 14px; background: #eaf4f3; z-index: 0; }
+.device-map { min-height: 520px; width: 100%; position: relative; overflow: hidden; border: 1px solid #d8ebe7; border-radius: 14px; background: #eaf4f3; z-index: 0; }
+.map-runtime-error { position: absolute; inset: 0; display: grid; place-content: center; gap: 5px; padding: 24px; color: #70898c; background: linear-gradient(135deg, rgba(239,252,246,.96), rgba(241,248,255,.96)); text-align: center; }
+.map-runtime-error strong { color: var(--ink); font-size: 13px; }
+.map-runtime-error span { max-width: 300px; font-size: 11px; line-height: 1.5; }
 .device-map .leaflet-control-zoom a { color: #315e5d; }
 .leaflet-device-icon { background: transparent !important; border: 0 !important; }
 .device-marker { display: grid; place-items: center; width: 36px; height: 36px; color: #fff; border: 3px solid rgba(255,255,255,.92); border-radius: 12px; box-shadow: 0 5px 13px rgba(23, 73, 75, .25); font-size: 17px; font-weight: 800; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.18); }
@@ -161,3 +164,28 @@ h1 { color: var(--ink); font-family: 'Space Grotesk', sans-serif; font-size: cla
 .topology-records { margin-top: 18px; }
 @keyframes alarm-pulse { 0%, 100% { box-shadow: 0 5px 13px rgba(23, 73, 75, .25); } 50% { box-shadow: 0 0 0 7px rgba(217, 94, 109, .18), 0 5px 13px rgba(23, 73, 75, .25); } }
 @media (max-width: 760px) { .device-map { min-height: 410px; } }
+
+/* Management and hierarchy controls. */
+.connection-status.live { color: #32936f; }
+.connection-status.live::before { background: #35a979; }
+.management-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 18px; }
+.management-panel { min-width: 0; }
+.management-error { margin-bottom: 14px; }
+.code-stack { display: grid; gap: 3px; color: #557a7b; font-size: 11px; }
+.code-stack span { display: inline-block; }
+.count-pill { display: inline-grid; min-width: 27px; min-height: 27px; place-items: center; padding: 0 7px; color: #317763; background: #e4f8ed; border-radius: 9px; font-size: 11px; font-weight: 700; }
+.inline-actions { display: inline-flex; gap: 6px; }
+.table-action { padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: #638184; font-size: 10px; font-weight: 700; }
+.table-action:hover { border-color: #9ed7c5; color: #276c5b; }
+.table-action:disabled { cursor: wait; opacity: .55; }
+.table-action.approve { color: #318b69; background: #f0fbf5; }
+.table-action.reject { color: #b35f6c; background: #fff7f8; }
+.device-form-panel { margin-bottom: 18px; }
+.device-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.device-form label { display: grid; gap: 6px; color: #678487; font-size: 11px; font-weight: 700; }
+.device-form input, .device-form select { width: 100%; min-height: 38px; padding: 0 11px; border: 1px solid var(--line); border-radius: 9px; outline: none; background: #fbfefe; color: #476d70; font-size: 12px; }
+.device-form input:focus, .device-form select:focus { border-color: #8ed6c2; box-shadow: 0 0 0 3px rgba(125, 218, 177, .15); }
+.device-form select:disabled { cursor: not-allowed; opacity: .56; }
+.form-actions { display: flex; justify-content: flex-end; align-items: end; gap: 9px; grid-column: 1 / -1; padding-top: 5px; }
+@media (max-width: 1050px) { .device-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .device-form { grid-template-columns: 1fr; } .form-actions { align-items: stretch; } .form-actions button { flex: 1; } }

@@ -1,4 +1,4 @@
-import { fetchJson } from './api'
+import { fetchJson, requestJson } from './api'
 
 const routes = {
   alarm: '/alarm/api',
@@ -16,6 +16,9 @@ export type AlarmRecord = {
   raisedTime: string
   clearedTime: string | null
   isActive: boolean
+  regionCode: string | null
+  provinceCode: string | null
+  leaCode: string | null
 }
 
 export type EnrichedAlarmRecord = AlarmRecord & {
@@ -24,6 +27,9 @@ export type EnrichedAlarmRecord = AlarmRecord & {
   priorityLevel: string
   deviceType: string
   deviceStatus: string
+  regionCode: string
+  provinceCode: string
+  leaCode: string
 }
 
 type AlarmDto = {
@@ -35,6 +41,9 @@ type AlarmDto = {
   raisedTime: string
   clearedTime: string | null
   isActive: boolean
+  regionCode?: string | null
+  provinceCode?: string | null
+  leaCode?: string | null
 }
 
 export type TopologyDevice = {
@@ -42,6 +51,13 @@ export type TopologyDevice = {
   deviceName: string
   deviceType: string
   ip: string
+  regionCode: string
+  provinceCode: string
+  leaCode: string
+  regionName: string
+  provinceName: string
+  leaName: string
+  assignedEngineerId: number
   status: string
   priorityLevel: string
   latitude: number
@@ -53,6 +69,64 @@ export type TopologyLink = {
   parentDeviceId: number
   childDeviceId: number
   linkStatus: string
+}
+
+export type RegionRecord = {
+  regionId: number
+  regionCode: string
+  name: string
+  description: string | null
+}
+
+export type ProvinceRecord = {
+  provinceId: number
+  provinceCode: string
+  name: string
+  regionId: number
+  region?: RegionRecord | null
+}
+
+export type LeaRecord = {
+  leaId: number
+  leaCode: string
+  name: string
+  provinceId: number
+  province?: ProvinceRecord | null
+}
+
+export type EmployeeRecord = {
+  userId: number
+  username: string
+  fullName: string
+  roleId: number
+  roleName: string | null
+  serviceId: string | null
+  email: string | null
+  region: string | null
+  province: string | null
+  lea: string | null
+  regionCode: string | null
+  provinceCode: string | null
+  leaCode: string | null
+}
+
+export type RoleRecord = {
+  roleId: number
+  roleName: string
+  description: string | null
+}
+
+export type AccountRequestRecord = {
+  requestId: number
+  fullName: string
+  email: string
+  serviceId: string
+  roleId: number
+  regionCode: string | null
+  provinceCode: string | null
+  leaCode: string | null
+  requestedAt: string
+  status: string
 }
 
 export type CorrelationFault = {
@@ -121,6 +195,9 @@ export async function getActiveAlarmsWithDeviceDetails(source: AlarmSource, sign
       priorityLevel: device?.priorityLevel ?? 'Unknown',
       deviceType: device?.deviceType ?? 'Unknown',
       deviceStatus: device?.status ?? 'Unknown',
+      regionCode: device?.regionCode ?? alarm.regionCode ?? 'Unavailable',
+      provinceCode: device?.provinceCode ?? alarm.provinceCode ?? 'Unavailable',
+      leaCode: device?.leaCode ?? alarm.leaCode ?? 'Unavailable',
     }
   })
 }
@@ -131,6 +208,47 @@ export function getTopologyDevices(signal?: AbortSignal) {
 
 export function getTopologyLinks(signal?: AbortSignal) {
   return fetchJson<TopologyLink[]>(`${routes.topology}/device-link`, signal)
+}
+
+export function getRegions(signal?: AbortSignal) {
+  return fetchJson<RegionRecord[]>(`${routes.topology}/region`, signal)
+}
+
+export function getProvinces(signal?: AbortSignal) {
+  return fetchJson<ProvinceRecord[]>(`${routes.topology}/province`, signal)
+}
+
+export function getLeas(signal?: AbortSignal) {
+  return fetchJson<LeaRecord[]>(`${routes.topology}/lea`, signal)
+}
+
+export function getEmployees(signal?: AbortSignal) {
+  return fetchJson<EmployeeRecord[]>(`${routes.identity}/user`, signal)
+}
+
+export function getRoles(signal?: AbortSignal) {
+  return fetchJson<RoleRecord[]>(`${routes.identity}/role`, signal)
+}
+
+export function getAccountRequests(signal?: AbortSignal) {
+  return fetchJson<AccountRequestRecord[]>(`${routes.identity}/accountrequest`, signal)
+}
+
+export function updateAccountRequestStatus(requestId: number, status: 'APPROVED' | 'REJECTED', signal?: AbortSignal) {
+  return requestJson<void>(`${routes.identity}/accountrequest/${requestId}/status`, 'PATCH', { status }, signal)
+}
+
+export function createDevice(payload: {
+  deviceName: string
+  deviceType: string
+  ip: string
+  priorityLevel: string
+  latitude: number
+  longitude: number
+  leaCode: string
+  assignedEngineerId: number
+}, signal?: AbortSignal) {
+  return requestJson<TopologyDevice>(`${routes.topology}/device`, 'POST', payload, signal)
 }
 
 export function getCorrelationFaults(signal?: AbortSignal) {
@@ -181,5 +299,8 @@ function normalizeAlarm(row: AlarmDto, source: Exclude<AlarmSource, 'all'>): Ala
     raisedTime: row.raisedTime,
     clearedTime: row.clearedTime,
     isActive: row.isActive,
+    regionCode: row.regionCode ?? null,
+    provinceCode: row.provinceCode ?? null,
+    leaCode: row.leaCode ?? null,
   }
 }

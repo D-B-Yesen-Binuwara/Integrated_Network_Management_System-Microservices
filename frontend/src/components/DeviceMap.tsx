@@ -15,11 +15,15 @@ export function DeviceMap({ devices, links, alarms }: DeviceMapProps) {
   const mapElement = useRef<HTMLDivElement>(null)
   const map = useRef<LeafletMap | null>(null)
   const layers = useRef<LeafletLayerGroup | null>(null)
+  const runtimeError = typeof window !== 'undefined' && !window.L
   const activeAlarmCounts = useMemo(() => countActiveAlarms(alarms), [alarms])
 
   useEffect(() => {
     const leaflet = window.L
-    if (!mapElement.current || !leaflet) return
+    if (!mapElement.current) return
+    if (!leaflet) {
+      return
+    }
 
     // Use Leaflet's SVG renderer. It is more reliable for this marker/link
     // volume and avoids canvas redraw errors during React StrictMode remounts.
@@ -92,7 +96,7 @@ export function DeviceMap({ devices, links, alarms }: DeviceMapProps) {
     window.setTimeout(() => currentMap.invalidateSize(), 0)
   }, [activeAlarmCounts, devices, links])
 
-  return <div className="device-map" ref={mapElement} aria-label="Map showing network device locations" />
+  return <div className="device-map" ref={mapElement} aria-label="Map showing network device locations">{runtimeError && <div className="map-runtime-error"><strong>Map renderer unavailable</strong><span>Leaflet could not be loaded. Check browser access to the pinned map runtime and refresh.</span></div>}</div>
 }
 
 function countActiveAlarms(alarms: AlarmRecord[]) {
@@ -133,7 +137,7 @@ function getMarkerTone(status: string, alarmCount: number) {
 
 function buildPopup(device: TopologyDevice, alarmCount: number) {
   const alarmText = alarmCount > 0 ? `${alarmCount} active alarm${alarmCount === 1 ? '' : 's'}` : 'No active alarms'
-  return `<div class="device-popup"><strong>${escapeHtml(device.deviceName)}</strong><span>${escapeHtml(device.deviceType)}</span><span>IP: ${escapeHtml(device.ip || 'Unavailable')}</span><span>Priority: ${escapeHtml(device.priorityLevel)}</span><span>Status: ${escapeHtml(device.status)} · ${alarmText}</span></div>`
+  return `<div class="device-popup"><strong>${escapeHtml(device.deviceName)}</strong><span>${escapeHtml(device.deviceType)}</span><span>IP: ${escapeHtml(device.ip || 'Unavailable')}</span><span>Region / Province: ${escapeHtml(device.regionCode || 'Unavailable')} / ${escapeHtml(device.provinceCode || 'Unavailable')}</span><span>LEA: ${escapeHtml(device.leaCode || 'Unavailable')}</span><span>Priority: ${escapeHtml(device.priorityLevel)}</span><span>Status: ${escapeHtml(device.status)} · ${alarmText}</span></div>`
 }
 
 function escapeHtml(value: string) {
