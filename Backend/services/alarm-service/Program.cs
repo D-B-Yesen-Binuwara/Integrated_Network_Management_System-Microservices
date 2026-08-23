@@ -15,6 +15,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
+// Keep direct service access safe for local tooling while the browser uses the
+// gateway in normal operation. Origins are configured per environment.
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+var allowCredentials = builder.Configuration.GetValue("Cors:AllowCredentials", false);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            .AllowAnyHeader()
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+
+        if (allowCredentials)
+        {
+            policy.AllowCredentials();
+        }
+    });
+});
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
@@ -41,6 +62,9 @@ builder.Services.AddScoped<ICEAAlarmService, CEAAlarmService>();
 builder.Services.AddSingleton<RuleLoader>();
 builder.Services.AddSingleton<RootCauseEngine>();
 builder.Services.AddScoped<ImpactAnalysisEngine>();
+builder.Services.AddScoped<ICorrelationEngine, CorrelationEngine>();
+builder.Services.AddScoped<IAlarmFactsProvider, AlarmFactsProvider>();
+builder.Services.AddScoped<ICorrelationResultService, CorrelationResultService>();
 
 builder.Services.AddScoped<IRootCauseRepository, RootCauseRepository>();
 builder.Services.AddScoped<IImpactedDeviceRepository, ImpactedDeviceRepository>();
@@ -67,7 +91,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("Frontend");
 app.MapControllers();
 
 var ruleLoader = app.Services.GetRequiredService<RuleLoader>();

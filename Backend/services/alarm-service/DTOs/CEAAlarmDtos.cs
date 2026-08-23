@@ -14,6 +14,9 @@ public record CEAAlarmQueryParams(
 public record CEAAlarmListDto(
     int CEAAlarmId,
     int DeviceId,
+    string RegionCode,
+    string ProvinceCode,
+    string LEACode,
     string AlarmType,
     DateTime RaisedTime,
     DateTime? ClearedTime,
@@ -25,6 +28,10 @@ public class CreateCEAAlarmRequestDto
     [Required]
     public int DeviceId { get; set; }
 
+    public string RegionCode { get; set; } = string.Empty;
+    public string ProvinceCode { get; set; } = string.Empty;
+    public string LEACode { get; set; } = string.Empty;
+
     [Required]
     public string AlarmType { get; set; } = string.Empty;
 
@@ -35,6 +42,10 @@ public class UpdateCEAAlarmRequestDto
 {
     [Required]
     public int DeviceId { get; set; }
+
+    public string RegionCode { get; set; } = string.Empty;
+    public string ProvinceCode { get; set; } = string.Empty;
+    public string LEACode { get; set; } = string.Empty;
 
     [Required]
     public string AlarmType { get; set; } = string.Empty;
@@ -48,6 +59,9 @@ public class UpdateCEAAlarmRequestDto
 public record CEAAlarmResponseDto(
     int CEAAlarmId,
     int DeviceId,
+    string RegionCode,
+    string ProvinceCode,
+    string LEACode,
     string AlarmType,
     DateTime RaisedTime,
     DateTime? ClearedTime,

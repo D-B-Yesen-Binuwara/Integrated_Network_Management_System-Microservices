@@ -1,4 +1,6 @@
 using alarm_service.Data;
+using alarm_service.Correlation.Engine;
+using alarm_service.Correlation.Models;
 using alarm_service.DTOs;
 using alarm_service.Entities;
 using alarm_service.Repositories;
@@ -13,12 +15,14 @@ public class SLBNAlarmService : ISLBNAlarmService
     private readonly ISLBNAlarmRepository _repository;
     private readonly AlarmDbContext _context;
     private readonly IImpactAnalysisService _impactAnalysisService;
+    private readonly ICorrelationEngine _correlationEngine;
 
-    public SLBNAlarmService(ISLBNAlarmRepository repository, AlarmDbContext context, IImpactAnalysisService impactAnalysisService)
+    public SLBNAlarmService(ISLBNAlarmRepository repository, AlarmDbContext context, IImpactAnalysisService impactAnalysisService, ICorrelationEngine correlationEngine)
     {
         _repository = repository;
         _context = context;
         _impactAnalysisService = impactAnalysisService;
+        _correlationEngine = correlationEngine;
     }
 
     public async Task<SLBNAlarmResponseDto?> GetByIdAsync(int id)
@@ -44,6 +48,9 @@ public class SLBNAlarmService : ISLBNAlarmService
         var alarm = new SLBNAlarm
         {
             DeviceId = dto.DeviceId,
+            RegionCode = dto.RegionCode,
+            ProvinceCode = dto.ProvinceCode,
+            LEACode = dto.LEACode,
             AlarmType = dto.AlarmType,
             ClearedTime = dto.ClearedTime,
             RaisedTime = DateTime.UtcNow,
@@ -52,10 +59,14 @@ public class SLBNAlarmService : ISLBNAlarmService
 
         var created = await _repository.AddAsync(alarm);
 
-        if (created.AlarmType == "NODE_DOWN")
+        await _correlationEngine.EvaluateAsync(new CorrelationContext
         {
-            await _impactAnalysisService.AnalyzeFailureAsync(created.DeviceId, created.SLBNAlarmId);
-        }
+            AlarmId = created.SLBNAlarmId,
+            DeviceId = created.DeviceId,
+            AlarmType = created.AlarmType,
+            DeviceType = "SLBN",
+            RaisedTime = created.RaisedTime
+        });
 
         return ToResponseDto(created);
     }
@@ -69,6 +80,9 @@ public class SLBNAlarmService : ISLBNAlarmService
         {
             SLBNAlarmId = id,
             DeviceId = dto.DeviceId,
+            RegionCode = dto.RegionCode,
+            ProvinceCode = dto.ProvinceCode,
+            LEACode = dto.LEACode,
             AlarmType = dto.AlarmType,
             RaisedTime = existing.RaisedTime,
             ClearedTime = dto.ClearedTime,
@@ -77,9 +91,20 @@ public class SLBNAlarmService : ISLBNAlarmService
 
         var updated = await _repository.UpdateAsync(updatedAlarm);
 
-        if (existing.IsActive && !updated.IsActive && updated.AlarmType == "NODE_DOWN")
+        if (existing.IsActive && !updated.IsActive)
         {
             await _impactAnalysisService.ClearRootCauseAsync(updated.DeviceId);
+        }
+        else if (updated.IsActive)
+        {
+            await _correlationEngine.EvaluateAsync(new CorrelationContext
+            {
+                AlarmId = updated.SLBNAlarmId,
+                DeviceId = updated.DeviceId,
+                AlarmType = updated.AlarmType,
+                DeviceType = "SLBN",
+                RaisedTime = updated.RaisedTime
+            });
         }
 
         return ToResponseDto(updated);
@@ -123,6 +148,9 @@ public class SLBNAlarmService : ISLBNAlarmService
             .Select(a => new SLBNAlarmListDto(
                 a.SLBNAlarmId,
                 a.DeviceId,
+                a.RegionCode,
+                a.ProvinceCode,
+                a.LEACode,
                 a.AlarmType,
                 a.RaisedTime,
                 a.ClearedTime,
@@ -141,6 +169,9 @@ public class SLBNAlarmService : ISLBNAlarmService
         new(
             alarm.SLBNAlarmId,
             alarm.DeviceId,
+            alarm.RegionCode,
+            alarm.ProvinceCode,
+            alarm.LEACode,
             alarm.AlarmType,
             alarm.RaisedTime,
             alarm.ClearedTime,

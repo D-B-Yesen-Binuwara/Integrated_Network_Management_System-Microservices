@@ -8,6 +8,7 @@
     "TargetAlarmType": "SERVICE_DEGRADED",
     "TargetDeviceType": "MSAN",
     "MarkSourceAsRootCause": true,
-    "SuppressTargetAlarm": false
+    "SuppressTargetAlarm": false,
+    "WindowMinutes": 10
   }
 ]

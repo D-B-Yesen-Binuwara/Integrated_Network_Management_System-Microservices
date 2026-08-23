@@ -9,6 +9,10 @@ public class CEAAlarm
 
     public int DeviceId { get; set; }
 
+    public string RegionCode { get; set; } = string.Empty;
+    public string ProvinceCode { get; set; } = string.Empty;
+    public string LEACode { get; set; } = string.Empty;
+
     public string AlarmType { get; set; } = string.Empty;
 
     public DateTime RaisedTime { get; set; }

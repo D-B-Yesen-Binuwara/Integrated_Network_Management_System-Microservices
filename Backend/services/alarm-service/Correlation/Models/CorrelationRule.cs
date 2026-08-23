@@ -11,4 +11,5 @@ public class CorrelationRule
     public string TargetDeviceType { get; set; } = string.Empty;
     public bool MarkSourceAsRootCause { get; set; }
     public bool SuppressTargetAlarm { get; set; }
+    public int WindowMinutes { get; set; } = 10;
 }
