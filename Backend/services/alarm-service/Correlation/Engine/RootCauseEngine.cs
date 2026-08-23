@@ -4,14 +4,12 @@ namespace alarm_service.Correlation.Engine;
 
 public class RootCauseEngine(RuleLoader ruleLoader)
 {
-    public CorrelationResult Evaluate(CorrelationContext context)
+    public CorrelationResult Evaluate(CorrelationContext context, CorrelationRule? matchedRule = null)
     {
         var result = new CorrelationResult();
 
-        var matchedRule = ruleLoader.GetAllRules()
-            .FirstOrDefault(r =>
-                r.SourceAlarmType == context.AlarmType &&
-                r.SourceDeviceType == context.DeviceType);
+        // Reuse the orchestrator's rule when available; otherwise keep this engine usable on its own.
+        matchedRule ??= ruleLoader.FindMatchingRule(context);
 
         if (matchedRule is null || !matchedRule.MarkSourceAsRootCause)
             return result;

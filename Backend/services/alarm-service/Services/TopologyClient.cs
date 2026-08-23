@@ -15,11 +15,11 @@ public class TopologyClient : ITopologyClient
         _logger = logger;
     }
 
-    public async Task<TopologyDeviceDto?> GetDeviceAsync(int deviceId)
+    public async Task<TopologyDeviceDto?> GetDeviceAsync(int deviceId, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<TopologyDeviceDto>($"api/device/{deviceId}");
+            var response = await _httpClient.GetFromJsonAsync<TopologyDeviceDto>($"api/device/{deviceId}", cancellationToken);
             return response;
         }
         catch (Exception ex)
@@ -29,11 +29,11 @@ public class TopologyClient : ITopologyClient
         }
     }
 
-    public async Task<List<TopologyDeviceDto>> GetChildrenAsync(int deviceId)
+    public async Task<List<TopologyDeviceDto>> GetChildrenAsync(int deviceId, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/children");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/children", cancellationToken);
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)
@@ -43,11 +43,11 @@ public class TopologyClient : ITopologyClient
         }
     }
 
-    public async Task<List<TopologyDeviceDto>> GetParentsAsync(int deviceId)
+    public async Task<List<TopologyDeviceDto>> GetParentsAsync(int deviceId, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/parents");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/parents", cancellationToken);
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)
@@ -57,11 +57,11 @@ public class TopologyClient : ITopologyClient
         }
     }
 
-    public async Task<List<TopologyDeviceDto>> GetDescendantsAsync(int deviceId)
+    public async Task<List<TopologyDeviceDto>> GetDescendantsAsync(int deviceId, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/descendants");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/descendants", cancellationToken);
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)
@@ -71,11 +71,11 @@ public class TopologyClient : ITopologyClient
         }
     }
 
-    public async Task<List<TopologyDeviceDto>> GetAncestorsAsync(int deviceId)
+    public async Task<List<TopologyDeviceDto>> GetAncestorsAsync(int deviceId, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/ancestors");
+            var response = await _httpClient.GetFromJsonAsync<List<TopologyDeviceDto>>($"api/device/{deviceId}/ancestors", cancellationToken);
             return response ?? new List<TopologyDeviceDto>();
         }
         catch (Exception ex)

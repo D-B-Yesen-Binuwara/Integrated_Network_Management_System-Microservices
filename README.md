@@ -9,9 +9,9 @@ This project follows a microservices architecture designed for a telecom NOC wor
 - **API Gateway** (YARP) - single entry point for the frontend; forwards requests to the correct microservice
 - **Identity Service** - authentication/authorization and RBAC (users, roles, account requests, area assignments)
 - **Topology Service** - manages network inventory (devices + device links) and geographic hierarchy (Region/Province/LEA)
-- **Alarm & Correlation Service** (next milestone) - ingests external alarms, runs correlation rules, and produces root-cause + impacted-device results
-- **AI & Analytics Service** (next milestone) - generates analytics/summaries from correlated events (MongoDB-backed)
-- **Frontend** (React) - dashboard UI that consumes the gateway APIs and receives realtime updates (SignalR)
+- **Alarm & Correlation Service** - ingests SLBN/CEAN/MSAN alarms, runs correlation rules, and produces root-cause + impacted-device results
+- **AI & Analytics Service** (planned) - generates analytics/summaries from correlated events (MongoDB-backed)
+- **Frontend** (React) - dashboard UI that consumes gateway APIs and displays live alarm, topology, correlation, and map views
 
 
 ## 📁 Project Structure
@@ -22,7 +22,9 @@ Integrated_Network_Management_System-Microservices/
 │   ├── gateway/                    # API Gateway (YARP)
 │   │   └── INMS.Gateway/
 │   └── services/                   # Microservices
-│       └── identity-service/       # Identity & User Management
+│       ├── alarm-service/           # Alarm ingestion and correlation
+│       ├── topology-service/        # Devices, links, and geographic coordinates
+│       └── identity-service/        # Identity & User Management
 │           ├── INMS.Identity.API/
 │           ├── INMS.Identity.Application/
 │           ├── INMS.Identity.Domain/
@@ -30,6 +32,30 @@ Integrated_Network_Management_System-Microservices/
 ├── frontend/                   # React Frontend
 └── Alarm_Management_System/    # Legacy monolith (excluded)
 ```
+
+## 🧭 Local Development (HTTP)
+
+The current local setup uses HTTP so a trusted ASP.NET HTTPS developer certificate is not required. The frontend calls the gateway at `http://localhost:5253`; it must not call individual microservices directly.
+
+Start each process in a separate terminal from the repository root:
+
+```powershell
+dotnet run --project Backend/services/topology-service/topology-service.csproj --launch-profile http
+dotnet run --project Backend/services/alarm-service/alarm-service.csproj --launch-profile alarm-service --urls http://localhost:5101
+dotnet run --project Backend/services/identity-service/INMS.Identity.API/INMS.Identity.API.csproj --launch-profile http
+dotnet run --project Backend/gateway/INMS.Gateway/INMS.Gateway.csproj --launch-profile http
+cd frontend
+npm run dev
+```
+
+The frontend reads `frontend/.env.local`:
+
+```env
+VITE_API_BASE_URL=http://localhost:5253
+VITE_API_USE_COOKIES=false
+```
+
+The alarm service depends on the topology service for topology-aware impact analysis. PostgreSQL must be running and populated using the manual SQL files in `database-scripts/` before service-backed pages can return records. The employee, account-request, and device-registration screens also require the identity service.
 
 ## 🚀 Services
 
@@ -45,7 +71,11 @@ Integrated_Network_Management_System-Microservices/
 - CORS support
 
 **Routes:**
-- `/identity/**` → Identity Service (localhost:7001)
+- `/identity/**` → Identity Service (localhost:5017 in local HTTP development / 7001 HTTPS)
+- `/topology/**` → Topology Service (localhost:5102 in local HTTP development)
+- `/alarm/**` → Alarm & Correlation Service (localhost:5101 in local HTTP development)
+
+The gateway removes the public service prefix before forwarding. For example, `/topology/api/device` is forwarded to `http://localhost:5102/api/device`.
 
 ### Identity Service
 **Location:** `Backend/services/identity-service/`
@@ -55,6 +85,7 @@ Integrated_Network_Management_System-Microservices/
 
 **Features:**
 - User management (CRUD operations)
+- Regional, provincial, and LEA engineer/officer assignments
 - Role-based access control
 - Account request processing
 - Area-based user assignments
@@ -75,6 +106,34 @@ Integrated_Network_Management_System-Microservices/
 - `GET /api/role` - List all roles
 - `POST /api/accountrequest` - Submit account request
 - `GET /api/accountrequest` - List account requests
+- `PATCH /api/accountrequest/{id}/status` - Approve or reject an account request
+
+### Topology Service
+**Location:** `Backend/services/topology-service/`
+**Port:** 5102 (HTTP) / 7248 (HTTPS)
+**Database:** PostgreSQL
+
+**API Endpoints:**
+- `GET /api/region` - List regions with region codes
+- `GET /api/province` - List provinces with province codes and their region
+- `GET /api/lea` - List LEAs with LEA codes and their province/region
+- `GET /api/device` - List devices with IP, status, priority, coordinates, hierarchy codes, and assigned engineer
+- `GET /api/device/{id}` - Get one device
+- `GET /api/device-link` - List parent-child device links
+- `POST /api/device-link` - Create a device link
+- `DELETE /api/device-link/{id}` - Delete a device link
+
+### Alarm & Correlation Service
+**Location:** `Backend/services/alarm-service/`
+**Port:** 5101 (HTTP) / 7101 (HTTPS)
+**Database:** PostgreSQL
+
+**API Endpoints:**
+- `GET /api/slbn-alarms/active` - List active SLBN alarms
+- `GET /api/cea-alarms/active` - List active CEAN alarms
+- `GET /api/msan-alarms/active` - List active MSAN alarms
+- `GET /api/correlation/faults` - List persisted correlated faults
+- `GET /api/correlation/impacted-devices` - List impacted devices
 
 ### Frontend Application
 **Location:** `frontend/`
@@ -89,7 +148,15 @@ Integrated_Network_Management_System-Microservices/
 - Axios for HTTP requests
 - Tailwind CSS for styling
 - SignalR for real-time communication
+- Leaflet map with device-type markers, topology links, alarm/status colors, and device popups
+- Persistent light mode and blue-purple gradient dark mode
 - ESLint for code quality
+
+The topology map uses live `latitude` and `longitude` values from the topology service. Alarm table IP addresses and priority levels are joined from topology device metadata using `deviceId`; no frontend fixture data is used.
+
+Region management verifies LEA engineer coverage, and the inventory form requires an LEA plus a matching assigned LEA engineer; region and province values are derived by the topology service from the LEA code.
+
+The pinned Leaflet JavaScript runtime is loaded from the CDN in `frontend/index.html`; the required CSS surface is local in `frontend/src/leaflet.css`. The browser still needs internet access for the runtime and OpenStreetMap tiles.
 
 **Dependencies:**
 - React 19.2.6
@@ -99,6 +166,7 @@ Integrated_Network_Management_System-Microservices/
 - Axios 1.16.1
 - Tailwind CSS 4.3.0
 - SignalR 2.4.3
+- Leaflet 1.9.4 via CDN
 
 ## 🛠️ Development Setup
 
@@ -151,6 +219,19 @@ Integrated_Network_Management_System-Microservices/
    ```
 
 ### Running the Application
+
+For the current dashboard pages, start the topology service, alarm service, identity service, gateway, and frontend using the commands in [Local Development (HTTP)](#-local-development-http). Login is intentionally not implemented yet, but the identity service is needed by employee/account management and device assignment screens.
+
+If using HTTPS instead, start the services with their HTTPS profiles, set `VITE_API_BASE_URL=https://localhost:7030`, and trust the local development certificate with `dotnet dev-certs https --trust`.
+
+The individual HTTPS endpoints are:
+
+- Gateway: `https://localhost:7030`
+- Alarm service: `https://localhost:7101`
+- Topology service: `https://localhost:7248`
+- Identity service: `https://localhost:7001`
+
+The older identity-only example below is retained for reference.
 
 1. **Start Identity Service:**
    ```bash
@@ -213,6 +294,24 @@ cd frontend
 npm run lint    # ESLint code quality check
 npm run build   # Production build test
 ```
+
+## 🐞 Troubleshooting
+
+### `GET /topology/api/device-link` returns 404
+
+The gateway should forward this request to `http://localhost:5102/api/device-link`. Ensure the topology service is rebuilt/restarted after route changes and that `DeviceLinkController` uses the explicit `api/device-link` route. A healthy gateway log will show a downstream `200` response instead of `Received HTTP/1.1 response 404`.
+
+### Edge reports “Tracking Prevention blocked access to storage”
+
+The Leaflet CSS is local, so this notice should no longer reference the stylesheet. If Edge still reports it, it is for the pinned Leaflet JavaScript runtime or OpenStreetMap tiles; it is separate from the API and does not explain a backend 404. The map requires browser access to those external runtime/tile URLs.
+
+### React DevTools message
+
+`Download the React DevTools...` is an informational development message, not an application error.
+
+### HTTP development warning about HTTPS redirection
+
+The HTTP development configuration disables HTTPS redirection because the local frontend uses `http://localhost:5253`. Production defaults still enable HTTPS redirection. For HTTPS local development, use the HTTPS profiles and configure `VITE_API_BASE_URL=https://localhost:7030`.
 
 ## 🚀 Deployment
 

@@ -1,4 +1,6 @@
 using alarm_service.DTOs.Requests;
+using alarm_service.Correlation.Engine;
+using alarm_service.Correlation.Models;
 using alarm_service.Services.Implement;
 using alarm_service.Repositories.Interfaces;
 
@@ -11,16 +13,28 @@ namespace alarm_service.Controllers;
 public class ImpactAnalysisController : ControllerBase
 {
     private readonly IImpactAnalysisService _impactAnalysisService;
+    private readonly ICorrelationEngine _correlationEngine;
 
-    public ImpactAnalysisController(IImpactAnalysisService impactAnalysisService)
+    public ImpactAnalysisController(IImpactAnalysisService impactAnalysisService, ICorrelationEngine correlationEngine)
     {
         _impactAnalysisService = impactAnalysisService;
+        _correlationEngine = correlationEngine;
     }
 
     [HttpPost("analyze")]
     public async Task<IActionResult> Analyze([FromBody] AnalyzeImpactRequest request)
     {
-        var result = await _impactAnalysisService.AnalyzeFailureAsync(request.DeviceId, request.AlarmId);
+        if (string.IsNullOrWhiteSpace(request.AlarmType) || string.IsNullOrWhiteSpace(request.DeviceType))
+            return BadRequest("AlarmType and DeviceType are required for rule-driven correlation.");
+
+        var result = await _correlationEngine.EvaluateAsync(new CorrelationContext
+        {
+            AlarmId = request.AlarmId,
+            DeviceId = request.DeviceId,
+            AlarmType = request.AlarmType,
+            DeviceType = request.DeviceType,
+            RaisedTime = request.RaisedTime?.ToUniversalTime() ?? DateTime.UtcNow
+        });
         return Ok(result);
     }
 

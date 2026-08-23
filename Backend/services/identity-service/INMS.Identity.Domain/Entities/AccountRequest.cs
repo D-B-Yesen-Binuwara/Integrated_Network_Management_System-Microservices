@@ -28,6 +28,10 @@ public class AccountRequest
 
     public Guid? LEAId { get; set; }
 
+    public string? RegionCode { get; set; }
+    public string? ProvinceCode { get; set; }
+    public string? LEACode { get; set; }
+
     public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
 
     [MaxLength(20)]

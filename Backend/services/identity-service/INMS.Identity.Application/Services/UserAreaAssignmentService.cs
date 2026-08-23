@@ -15,7 +15,7 @@ public class UserAreaAssignmentService
         _areaValidator = areaValidator;
     }
 
-    public async Task AssignArea(int userId, string areaType, Guid areaId)
+    public async Task AssignArea(int userId, string areaType, Guid areaId, string? regionCode = null, string? provinceCode = null, string? leaCode = null)
     {
         if (areaType != "Region" && areaType != "Province" && areaType != "LEA")
             throw new Exception("Invalid AreaType");
@@ -35,14 +35,17 @@ public class UserAreaAssignmentService
         {
             UserId = userId,
             AreaType = areaType,
-            AreaId = areaId
+            AreaId = areaId,
+            RegionCode = regionCode,
+            ProvinceCode = provinceCode,
+            LEACode = leaCode
         });
     }
 
     public async Task<List<UserAreaAssignmentDto>> GetUserAreas(int userId)
     {
         var assignments = await _repository.GetAllByUserId(userId);
-        return assignments.Select(a => new UserAreaAssignmentDto(a.AssignmentId, a.AreaType, a.AreaId)).ToList();
+        return assignments.Select(a => new UserAreaAssignmentDto(a.AssignmentId, a.AreaType, a.AreaId, a.RegionCode, a.ProvinceCode, a.LEACode)).ToList();
     }
 
     public async Task ReplaceUserAreas(int userId, List<AssignAreaDto> assignments)
@@ -57,7 +60,7 @@ public class UserAreaAssignmentService
         {
             // reuse validation from AssignArea
             if (a == null) continue;
-            await AssignArea(userId, a.AreaType, a.AreaId);
+            await AssignArea(userId, a.AreaType, a.AreaId, a.RegionCode, a.ProvinceCode, a.LEACode);
         }
     }
 }

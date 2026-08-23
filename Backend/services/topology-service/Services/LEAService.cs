@@ -41,6 +41,7 @@ public class LEAService : ILEAService
         if (province == null) throw new Exception("Province does not exist");
 
         existing.Name = lea.Name;
+        existing.LEACode = lea.LEACode;
         existing.ProvinceId = lea.ProvinceId;
 
         return await _leaRepository.UpdateAsync(existing);

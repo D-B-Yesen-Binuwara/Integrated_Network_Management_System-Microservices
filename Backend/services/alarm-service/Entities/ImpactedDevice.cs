@@ -19,6 +19,9 @@ public class ImpactedDevice
     [MaxLength(100)]
     public string ImpactType { get; set; } = string.Empty;
 
+    [MaxLength(50)]
+    public string DeviceType { get; set; } = string.Empty;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [ForeignKey(nameof(RootCauseId))]

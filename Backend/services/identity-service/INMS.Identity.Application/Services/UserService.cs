@@ -22,18 +22,29 @@ public class UserService : IUserService
     {
         var users = await _repository.GetAll();
 
-        var result = users.Select(u => new UserResponseDto(
-            u.UserId,
-            u.Username,
-            u.FullName,
-            u.RoleId,
-            u.Role?.RoleName,
-            u.ServiceId,
-            u.Email,
-            null,
-            null,
-            null
-        )).ToList();
+        var result = new List<UserResponseDto>();
+        foreach (var user in users)
+        {
+            var assignments = await _areaAssignmentRepository.GetAllByUserId(user.UserId);
+            var region = assignments.FirstOrDefault(a => a.AreaType == "Region");
+            var province = assignments.FirstOrDefault(a => a.AreaType == "Province");
+            var lea = assignments.FirstOrDefault(a => a.AreaType == "LEA");
+
+            result.Add(new UserResponseDto(
+                user.UserId,
+                user.Username,
+                user.FullName,
+                user.RoleId,
+                user.Role?.RoleName,
+                user.ServiceId,
+                user.Email,
+                region?.RegionCode,
+                province?.ProvinceCode,
+                lea?.LEACode,
+                region?.RegionCode,
+                province?.ProvinceCode,
+                lea?.LEACode));
+        }
 
         return result;
     }
@@ -74,17 +85,17 @@ public class UserService : IUserService
 
         if (dto.RegionId.HasValue)
         {
-            await _areaAssignmentRepository.AssignArea(new UserAreaAssignment { UserId = user.UserId, AreaType = "Region", AreaId = dto.RegionId.Value });
+            await _areaAssignmentRepository.AssignArea(new UserAreaAssignment { UserId = user.UserId, AreaType = "Region", AreaId = dto.RegionId.Value, RegionCode = dto.RegionCode });
         }
 
         if (dto.ProvinceId.HasValue)
         {
-            await _areaAssignmentRepository.AssignArea(new UserAreaAssignment { UserId = user.UserId, AreaType = "Province", AreaId = dto.ProvinceId.Value });
+            await _areaAssignmentRepository.AssignArea(new UserAreaAssignment { UserId = user.UserId, AreaType = "Province", AreaId = dto.ProvinceId.Value, ProvinceCode = dto.ProvinceCode });
         }
 
         if (dto.LEAId.HasValue)
         {
-            await _areaAssignmentRepository.AssignArea(new UserAreaAssignment { UserId = user.UserId, AreaType = "LEA", AreaId = dto.LEAId.Value });
+            await _areaAssignmentRepository.AssignArea(new UserAreaAssignment { UserId = user.UserId, AreaType = "LEA", AreaId = dto.LEAId.Value, LEACode = dto.LEACode });
         }
     }
 

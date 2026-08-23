@@ -33,6 +33,7 @@ public class RegionService : IRegionService
         if (existing == null) throw new Exception("Region not found");
 
         existing.Name = region.Name;
+        existing.RegionCode = region.RegionCode;
         existing.Description = region.Description;
 
         return await _regionRepository.UpdateAsync(existing);

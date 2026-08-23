@@ -24,16 +24,16 @@ public class ImpactAnalysisService : IImpactAnalysisService
         _logger = logger;
     }
 
-    public async Task<AnalyzeImpactResponse> AnalyzeFailureAsync(int deviceId, int alarmId)
+    public async Task<AnalyzeImpactResponse> AnalyzeFailureAsync(int deviceId, int alarmId, string alarmType = "UNKNOWN", string deviceType = "")
     {
         _logger.LogInformation("Analyzing failure for DeviceId {DeviceId} and AlarmId {AlarmId}", deviceId, alarmId);
 
         var parentDevices = await _topologyClient.GetParentsAsync(deviceId);
+        var activeRootCauses = (await _rootCauseRepository.GetAllAsync()).ToList();
         bool isRootFailure = true;
 
         if (parentDevices.Any())
         {
-            var activeRootCauses = await _rootCauseRepository.GetAllAsync();
             var parentIds = parentDevices.Select(p => p.DeviceId).ToHashSet();
             
             if (activeRootCauses.Any(rc => parentIds.Contains(rc.DeviceId)))
@@ -42,34 +42,17 @@ public class ImpactAnalysisService : IImpactAnalysisService
             }
         }
 
-        RootCause rootCause;
-        if (isRootFailure)
+        RootCause? rootCause = isRootFailure
+            ? await _rootCauseRepository.GetByDeviceIdAsync(deviceId)
+            : await FindUpstreamRootCause(deviceId, activeRootCauses);
+
+        rootCause ??= await _rootCauseRepository.CreateAsync(new RootCause
         {
-            rootCause = await _rootCauseRepository.GetByDeviceIdAsync(deviceId);
-            if (rootCause == null)
-            {
-                rootCause = await _rootCauseRepository.CreateAsync(new RootCause
-                {
-                    DeviceId = deviceId,
-                    AlarmId = alarmId,
-                    RootCauseType = "NODE_DOWN"
-                });
-            }
-        }
-        else
-        {
-            var activeRootCauses = await _rootCauseRepository.GetAllAsync();
-            rootCause = await FindUpstreamRootCause(deviceId, activeRootCauses);
-            if (rootCause == null)
-            {
-                rootCause = await _rootCauseRepository.CreateAsync(new RootCause
-                {
-                    DeviceId = deviceId,
-                    AlarmId = alarmId,
-                    RootCauseType = "NODE_DOWN"
-                });
-            }
-        }
+            DeviceId = deviceId,
+            AlarmId = alarmId,
+            RootCauseType = alarmType,
+            SourceDeviceType = deviceType
+        });
 
         var impactedDeviceIds = await GetDownstreamDeviceIdsAsync(rootCause.DeviceId);
         await RebuildImpactedDevicesAsync(rootCause.RootCauseId, rootCause.DeviceId, impactedDeviceIds);
@@ -139,7 +122,7 @@ public class ImpactAnalysisService : IImpactAnalysisService
                 if (upstreamRc == null)
                 {
                     _logger.LogInformation("Promoting DeviceId {DeviceId} to root cause", deviceId);
-                    await AnalyzeFailureAsync(deviceId, 0);
+                    await AnalyzeFailureAsync(deviceId, 0, "UNKNOWN", device.DeviceType);
                     activeRootCauses = (await _rootCauseRepository.GetAllAsync()).ToList();
                 }
             }

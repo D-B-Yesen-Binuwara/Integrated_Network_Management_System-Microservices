@@ -8,7 +8,8 @@
     "TargetAlarmType": "NODE_UNREACHABLE",
     "TargetDeviceType": "MSAN",
     "MarkSourceAsRootCause": true,
-    "SuppressTargetAlarm": true
+    "SuppressTargetAlarm": true,
+    "WindowMinutes": 10
   },
   {
     "RuleName": "CEAN Node Failure",
@@ -19,6 +20,7 @@
     "TargetAlarmType": "NODE_UNREACHABLE",
     "TargetDeviceType": "MSAN",
     "MarkSourceAsRootCause": true,
-    "SuppressTargetAlarm": true
+    "SuppressTargetAlarm": true,
+    "WindowMinutes": 10
   }
 ]

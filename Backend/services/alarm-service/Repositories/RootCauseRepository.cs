@@ -25,9 +25,9 @@ public class RootCauseRepository : IRootCauseRepository
             .FirstOrDefaultAsync(r => r.DeviceId == deviceId);
     }
 
-    public async Task<IEnumerable<RootCause>> GetAllAsync()
+    public async Task<IEnumerable<RootCause>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.RootCauses.ToListAsync();
+        return await _context.RootCauses.ToListAsync(cancellationToken);
     }
 
     public async Task<RootCause> CreateAsync(RootCause rootCause)

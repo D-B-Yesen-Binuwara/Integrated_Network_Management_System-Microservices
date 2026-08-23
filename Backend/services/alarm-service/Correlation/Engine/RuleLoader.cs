@@ -26,14 +26,28 @@ public class RuleLoader
     public IEnumerable<CorrelationRule> GetAllRules() =>
         _slbnRules.Concat(_ceanRules).Concat(_msanRules)
                   .Where(r => r.Enabled)
-                  .OrderBy(r => r.Priority);
+                  .OrderBy(r => r.Priority)
+                  .ThenBy(r => r.RuleName, StringComparer.OrdinalIgnoreCase);
+
+    public CorrelationRule? FindMatchingRule(CorrelationContext context) =>
+        GetAllRules().FirstOrDefault(rule =>
+            string.Equals(rule.SourceAlarmType, context.AlarmType, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(rule.SourceDeviceType, context.DeviceType, StringComparison.OrdinalIgnoreCase));
 
     private static IReadOnlyList<CorrelationRule> LoadRules(string path)
     {
         if (!File.Exists(path))
             return [];
 
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<List<CorrelationRule>>(json, _jsonOptions) ?? [];
+        try
+        {
+            var json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<CorrelationRule>>(json, _jsonOptions) ?? [];
+        }
+        catch (Exception) when (File.Exists(path))
+        {
+            // A malformed or unreadable rule file must not take down the alarm API.
+            return [];
+        }
     }
 }

@@ -40,6 +40,10 @@ public class DeviceRepository : IDeviceRepository
         existing.DeviceName = device.DeviceName;
         existing.DeviceType = device.DeviceType;
         existing.IP = device.IP;
+        existing.RegionCode = device.RegionCode;
+        existing.ProvinceCode = device.ProvinceCode;
+        existing.LEACode = device.LEACode;
+        existing.AssignedEngineerId = device.AssignedEngineerId;
         existing.Status = device.Status;
         existing.PriorityLevel = device.PriorityLevel;
         existing.Latitude = device.Latitude;

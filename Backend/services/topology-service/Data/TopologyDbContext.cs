@@ -37,10 +37,15 @@ public class TopologyDbContext : DbContext
             entity.Property(device => device.DeviceName).HasColumnName("device_name");
             entity.Property(device => device.DeviceType).HasColumnName("device_type");
             entity.Property(device => device.IP).HasColumnName("ip");
+            entity.Property(device => device.RegionCode).HasColumnName("region_code").HasMaxLength(20);
+            entity.Property(device => device.ProvinceCode).HasColumnName("province_code").HasMaxLength(20);
+            entity.Property(device => device.LEACode).HasColumnName("lea_code").HasMaxLength(20);
+            entity.Property(device => device.AssignedEngineerId).HasColumnName("assigned_engineer_id");
             entity.Property(device => device.Status).HasColumnName("status");
             entity.Property(device => device.PriorityLevel).HasColumnName("priority_level");
             entity.Property(device => device.Latitude).HasColumnName("latitude");
             entity.Property(device => device.Longitude).HasColumnName("longitude");
+            entity.HasIndex(device => device.LEACode);
 
             entity.Property(d => d.DeviceType)
                 .HasConversion<string>()
@@ -82,8 +87,10 @@ public class TopologyDbContext : DbContext
             entity.ToTable("regions");
             entity.HasKey(r => r.RegionId);
             entity.Property(r => r.RegionId).HasColumnName("region_id");
+            entity.Property(r => r.RegionCode).HasColumnName("region_code").HasMaxLength(20);
             entity.Property(r => r.Name).HasColumnName("name");
             entity.Property(r => r.Description).HasColumnName("description");
+            entity.HasIndex(r => r.RegionCode).IsUnique();
         });
 
         modelBuilder.Entity<Province>(entity =>
@@ -91,6 +98,7 @@ public class TopologyDbContext : DbContext
             entity.ToTable("provinces");
             entity.HasKey(p => p.ProvinceId);
             entity.Property(p => p.ProvinceId).HasColumnName("province_id");
+            entity.Property(p => p.ProvinceCode).HasColumnName("province_code").HasMaxLength(20);
             entity.Property(p => p.Name).HasColumnName("name");
             entity.Property(p => p.RegionId).HasColumnName("region_id");
 
@@ -98,6 +106,7 @@ public class TopologyDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(p => p.RegionId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(p => p.ProvinceCode).IsUnique();
         });
 
         modelBuilder.Entity<LEA>(entity =>
@@ -105,6 +114,7 @@ public class TopologyDbContext : DbContext
             entity.ToTable("leas");
             entity.HasKey(l => l.LEAId);
             entity.Property(l => l.LEAId).HasColumnName("lea_id");
+            entity.Property(l => l.LEACode).HasColumnName("lea_code").HasMaxLength(20);
             entity.Property(l => l.Name).HasColumnName("name");
             entity.Property(l => l.ProvinceId).HasColumnName("province_id");
 
@@ -112,6 +122,7 @@ public class TopologyDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(l => l.ProvinceId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(l => l.LEACode).IsUnique();
         });
 
         // Vendor configuration
