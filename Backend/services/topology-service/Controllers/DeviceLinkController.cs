@@ -5,7 +5,7 @@ using topology_service.Services;
 namespace topology_service.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/device-link")]
 public class DeviceLinkController : ControllerBase
 {
     private readonly IDeviceLinkService _service;

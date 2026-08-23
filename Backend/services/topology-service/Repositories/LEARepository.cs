@@ -17,6 +17,7 @@ public class LEARepository : ILEARepository
     {
         return await _context.Set<LEA>()
             .Include(l => l.Province)
+            .ThenInclude(p => p!.Region)
             .AsNoTracking()
             .OrderBy(l => l.LEAId)
             .ToListAsync();

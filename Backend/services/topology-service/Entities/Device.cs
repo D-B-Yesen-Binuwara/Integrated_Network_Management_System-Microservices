@@ -20,6 +20,22 @@ public class Device
     public string IP { get; set; } = string.Empty;
 
     [Required]
+    [MaxLength(20)]
+    public string RegionCode { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(20)]
+    public string ProvinceCode { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(20)]
+    public string LEACode { get; set; } = string.Empty;
+
+    // Employee IDs belong to the separate identity database, so this is an
+    // application-level reference rather than a cross-database foreign key.
+    public int AssignedEngineerId { get; set; }
+
+    [Required]
     public DeviceStatus Status { get; set; } = DeviceStatus.UP;
 
     [Required]

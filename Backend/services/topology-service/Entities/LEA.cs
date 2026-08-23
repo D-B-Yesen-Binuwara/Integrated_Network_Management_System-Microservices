@@ -8,6 +8,10 @@ namespace topology_service.Entities
         public int LEAId { get; set; }
         
         [Required]
+        [MaxLength(20)]
+        public string LEACode { get; set; } = string.Empty;
+
+        [Required]
         public string Name { get; set; } = string.Empty;
         
         public int ProvinceId { get; set; }

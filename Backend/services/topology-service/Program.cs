@@ -10,8 +10,30 @@ using topology_service.Services;
 Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
+var useHttpsRedirection = builder.Configuration.GetValue("Security:UseHttpsRedirection", !builder.Environment.IsDevelopment());
 
 builder.Configuration.AddEnvironmentVariables();
+
+// Origins are configuration-driven so this service does not need a code
+// change when the frontend host changes between environments.
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+var allowCredentials = builder.Configuration.GetValue("Cors:AllowCredentials", false);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            .AllowAnyHeader()
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+
+        if (allowCredentials)
+        {
+            policy.AllowCredentials();
+        }
+    });
+});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -54,7 +76,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (useHttpsRedirection)
+{
+    app.UseHttpsRedirection();
+}
+app.UseCors("Frontend");
 
 app.MapControllers();
 

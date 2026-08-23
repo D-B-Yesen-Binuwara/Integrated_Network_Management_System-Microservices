@@ -9,6 +9,13 @@ public class DeviceDto
     public string DeviceName { get; set; } = string.Empty;
     public DeviceType DeviceType { get; set; }
     public string IP { get; set; } = string.Empty;
+    public string RegionCode { get; set; } = string.Empty;
+    public string ProvinceCode { get; set; } = string.Empty;
+    public string LEACode { get; set; } = string.Empty;
+    public string RegionName { get; set; } = string.Empty;
+    public string ProvinceName { get; set; } = string.Empty;
+    public string LEAName { get; set; } = string.Empty;
+    public int AssignedEngineerId { get; set; }
     public DeviceStatus Status { get; set; }
     public PriorityLevel PriorityLevel { get; set; }
     public decimal Latitude { get; set; }
@@ -26,6 +33,13 @@ public class CreateDeviceDto
 
     [MaxLength(50)]
     public string? IP { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string LEACode { get; set; } = string.Empty;
+
+    [Range(1, int.MaxValue)]
+    public int AssignedEngineerId { get; set; }
 
     [Required]
     public PriorityLevel PriorityLevel { get; set; }
@@ -48,6 +62,13 @@ public class UpdateDeviceDto
 
     [MaxLength(50)]
     public string? IP { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string LEACode { get; set; } = string.Empty;
+
+    [Range(1, int.MaxValue)]
+    public int AssignedEngineerId { get; set; }
 
     [Required]
     public DeviceStatus Status { get; set; }

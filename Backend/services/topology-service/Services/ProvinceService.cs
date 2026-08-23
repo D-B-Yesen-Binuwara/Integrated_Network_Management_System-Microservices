@@ -40,6 +40,7 @@ public class ProvinceService : IProvinceService
         if (existing == null) throw new Exception("Province not found");
 
         existing.Name = province.Name;
+        existing.ProvinceCode = province.ProvinceCode;
         existing.RegionId = province.RegionId;
 
         return await _provinceRepository.UpdateAsync(existing);

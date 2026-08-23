@@ -34,15 +34,37 @@ public class DeviceController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<DeviceDto>> Create([FromBody] CreateDeviceDto dto)
     {
-        var created = await _deviceService.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.DeviceId }, created);
+        try
+        {
+            var created = await _deviceService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.DeviceId }, created);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<DeviceDto>> Update(int id, [FromBody] UpdateDeviceDto dto)
     {
-        var updated = await _deviceService.UpdateAsync(id, dto);
-        return updated == null ? NotFound() : Ok(updated);
+        try
+        {
+            var updated = await _deviceService.UpdateAsync(id, dto);
+            return updated == null ? NotFound() : Ok(updated);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id:int}")]
