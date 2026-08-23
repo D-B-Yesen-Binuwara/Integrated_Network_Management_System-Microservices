@@ -30,7 +30,10 @@ public class AccountRequestService : IAccountRequestService
             RoleId = dto.RoleId,
             RegionId = dto.RegionId,
             ProvinceId = dto.ProvinceId,
-            LEAId = dto.LEAId
+            LEAId = dto.LEAId,
+            RegionCode = dto.RegionCode,
+            ProvinceCode = dto.ProvinceCode,
+            LEACode = dto.LEACode
         };
 
         await _repo.Create(request);
@@ -67,13 +70,13 @@ public class AccountRequestService : IAccountRequestService
         try
         {
             // Region is required on AccountRequest
-            await _areaAssignmentService.AssignArea(user.UserId, "Region", request.RegionId);
+            await _areaAssignmentService.AssignArea(user.UserId, "Region", request.RegionId, request.RegionCode);
 
             if (request.ProvinceId.HasValue)
-                await _areaAssignmentService.AssignArea(user.UserId, "Province", request.ProvinceId.Value);
+                await _areaAssignmentService.AssignArea(user.UserId, "Province", request.ProvinceId.Value, provinceCode: request.ProvinceCode);
 
             if (request.LEAId.HasValue)
-                await _areaAssignmentService.AssignArea(user.UserId, "LEA", request.LEAId.Value);
+                await _areaAssignmentService.AssignArea(user.UserId, "LEA", request.LEAId.Value, leaCode: request.LEACode);
         }
         catch
         {

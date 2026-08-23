@@ -66,7 +66,7 @@ public class UserController : ControllerBase
 
         try
         {
-            await _areaService.AssignArea(id, dto.AreaType, dto.AreaId);
+            await _areaService.AssignArea(id, dto.AreaType, dto.AreaId, dto.RegionCode, dto.ProvinceCode, dto.LEACode);
             return Ok(new { message = "Area assigned" });
         }
         catch (Exception ex)

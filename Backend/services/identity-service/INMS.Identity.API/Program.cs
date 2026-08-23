@@ -6,6 +6,7 @@ using INMS.Identity.Application.Interfaces;
 using INMS.Identity.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var useHttpsRedirection = builder.Configuration.GetValue("Security:UseHttpsRedirection", !builder.Environment.IsDevelopment());
 
 // Add services
 builder.Services.AddDbContext<IdentityDbContext>(options =>
@@ -31,11 +32,24 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+var allowCredentials = builder.Configuration.GetValue("Cors:AllowCredentials", false);
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins(allowedOrigins)
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            .AllowAnyHeader()
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+
+        // Do not allow cross-origin cookies unless the deployment explicitly
+        // opts in after configuring its authentication and CSRF strategy.
+        if (allowCredentials)
+        {
+            policy.AllowCredentials();
+        }
     });
 });
 
@@ -44,8 +58,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
+if (useHttpsRedirection)
+{
+    app.UseHttpsRedirection();
+}
+app.UseCors("Frontend");
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
